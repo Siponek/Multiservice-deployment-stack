@@ -2,7 +2,9 @@
 
 Exam project
 
-...authors, ...
+- Giorgio Rengucci 4483986
+- Milo Galli 4483986
+- Szymon Piotr Zinkowicz 5181814
 
 ## Facilities available
 
