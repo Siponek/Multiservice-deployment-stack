@@ -15,7 +15,7 @@ Exam project
 ## Setup and configuration
 
 - update `ansible_host` in [inventory.yml](inventory.yml) to fit your VMs ip addresses
-- create a `secrets.yml` file in project root
+- create a `secrets.yml` file in project root (see [secrets.yml.example](secrets.yml.example))
 - set your sudo password for the two VMs inside `secrets.yml` using the format:
   
   ```txt
