@@ -13,3 +13,13 @@
   - monitoring
   - logging
   - dashboard
+
+# running apt update and upgrade
+- name: Update and upgrade
+  hosts: all
+  become: true
+  tasks:
+  - name: Update and upgrade
+    ansible.builtin.apt:
+      update_cache: true
+      upgrade: dist
