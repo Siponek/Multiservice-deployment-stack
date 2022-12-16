@@ -11,3 +11,13 @@ Exam project
 - `make run-ansible` runs the Ansible playbook
 - `make run-ansible-lint` runs the Ansible playbook linter
 - An example inside of `examples` of the integration between Nextcloud and Keycloak
+
+## Setup and configuration
+
+- update `ansible_host` in [inventory.yml](inventory.yml) to fit your VMs ip addresses
+- set your sudo password for the two VMs inside [secrets.yml](secrets.yml) using the format:
+  
+  ```txt
+  vm1_sudo_password: "<your vm1 sudo password>"
+  vm2_sudo_password: "<your vm2 sudo password>"
+  ```
