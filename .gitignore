@@ -1,2 +1,6 @@
+.DS_Store
 venv
+
 secrets.yml
+vault.yml
+Exam.pdf
