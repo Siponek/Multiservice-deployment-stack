@@ -5,16 +5,33 @@ all:
       ansible_port: 22
       ansible_user: giorgio
       ansible_become_pass: "{{ vm1_sudo_password }}" # Set this variable inside secrets.yml using ansible-vault
-      ansible_ssh_private_key_file: ~/.ssh/id_rsa
+      ansible_ssh_private_key_file: ~/.ssh/vcc/id_vcc
       ansible_ssh_common_args: >-
         -o UserKnownHostsFile=/dev/null
         -o StrictHostKeyChecking=no
+      vars:
+        storage_network_ip: 10.255.255.20
     node2:
       ansible_host: 172.16.254.20
       ansible_port: 22
       ansible_user: giorgio
-      ansible_become_pass: "{{ vm1_sudo_password }}" # Set this variable inside secrets.yml using ansible-vault
-      ansible_ssh_private_key_file: ~/.ssh/id_rsa
+      ansible_become_pass: "{{ vm2_sudo_password }}" # Set this variable inside secrets.yml using ansible-vault
+      ansible_ssh_private_key_file: ~/.ssh/vcc/id_vcc
       ansible_ssh_common_args: >-
         -o UserKnownHostsFile=/dev/null
         -o StrictHostKeyChecking=no
+      vars:
+        storage_network_ip: 10.255.255.20
+    children:
+      nfs-servers:
+        hosts:
+          node1:
+      nfs-clients:
+        hosts:
+          node2:
+      nfs-users:
+        children:
+          nfs-servers:
+          nfs-clients:
+        vars:
+          nfs_share _path: /srv/nfs
