@@ -1,1 +1,3 @@
+node1_ip: "172.16.254.10"
+node2_ip: "172.16.254.20"
 ssh_private_key_path: "~/.ssh/vcc/id_vcc"
