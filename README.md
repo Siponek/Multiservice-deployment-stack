@@ -14,10 +14,7 @@ Exam project
 
 ## Setup and configuration
 
-- update `node1_ip` and `node2_ip` in [variables.yml](variables.yml) to fit your VMs ip addresses
-- create a `secrets.yml` file in project root (see [secrets.yml.example](secrets.yml.example))
-- set your sudo password for the two VMs inside `secrets.yml` using the format:
-  ```txt
-  vm1_sudo_password: "<your vm1 sudo password>"
-  vm2_sudo_password: "<your vm2 sudo password>"
-  ```
+In the project root:
+
+- create a `variables.yml` to fit your VMs parameters (see [variables.example.yml](variables.example.yml)
+- create a `secrets.yml` with your VMs sudo passwords (see [secrets.example.yml](secrets.example.yml))
