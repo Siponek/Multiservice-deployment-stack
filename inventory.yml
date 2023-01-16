@@ -3,7 +3,7 @@ all:
     node1:
       ansible_host: "{{ node1_ip }}"
       ansible_port: 22
-      ansible_user: "{{ vm1_user }}"
+      ansible_user: "{{ node1_user }}"
       ansible_become_pass: "{{ vm1_sudo_password }}" # Set this variable inside secrets.yml using ansible-vault
       ansible_ssh_private_key_file: "{{ ssh_private_key_path }}"
       ansible_ssh_common_args: >-
@@ -14,7 +14,7 @@ all:
     node2:
       ansible_host: "{{ node2_ip }}"
       ansible_port: 22
-      ansible_user: "{{ vm2_user }}"
+      ansible_user: "{{ node2_user }}"
       ansible_become_pass: "{{ vm2_sudo_password }}" # Set this variable inside secrets.yml using ansible-vault
       ansible_ssh_private_key_file: "{{ ssh_private_key_path }}"
       ansible_ssh_common_args: >-
