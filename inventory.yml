@@ -1,7 +1,7 @@
 all:
   hosts:
     node1:
-      ansible_host: 172.16.254.10
+      ansible_host: "{{ node1_ip }}"
       ansible_port: 22
       ansible_user: giorgio
       ansible_become_pass: "{{ vm1_sudo_password }}" # Set this variable inside secrets.yml using ansible-vault
@@ -12,7 +12,7 @@ all:
       vars:
         storage_network_ip: 10.255.255.20
     node2:
-      ansible_host: 172.16.254.20
+      ansible_host: "{{ node2_ip }}"
       ansible_port: 22
       ansible_user: giorgio
       ansible_become_pass: "{{ vm2_sudo_password }}" # Set this variable inside secrets.yml using ansible-vault

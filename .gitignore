@@ -2,5 +2,6 @@
 venv
 
 secrets.yml
+variables.yml
 vault.yml
 Exam.pdf
