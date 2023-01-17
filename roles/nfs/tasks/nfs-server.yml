@@ -1,0 +1,28 @@
+---
+- name: Install nfs-kernel-server on nfs_servers
+  ansible.builtin.apt:
+    name: nfs-kernel-server
+    state: present
+
+- name: Enable and start nfs-kernel-server
+  ansible.builtin.service:
+    name: nfs-kernel-server
+    enabled: true
+    state: started
+
+# update the /etc/exports file
+- name: Add nfs share to /etc/exports
+  ansible.builtin.lineinfile:
+    # line => /data 10.255.255.10(rw,sync,no_subtree_check) 10.255.255.20(rw,rw,no_root_squash,sync,no_subtree_check)
+    path: /etc/exports
+    line: "{{ nfs_share_path }} {{ hostvars['node1']['vars']['storage_network_ip'] }}(rw,sync,no_subtree_check) \
+          {{ hostvars['node2']['vars']['storage_network_ip'] }}(rw,no_root_squash,sync,no_subtree_check)"
+    state: present
+    create: true
+    owner: root
+    group: root
+    mode: 0644
+  notify: Restart nfs-kernel-server
+
+- name: Flush handlers
+  ansible.builtin.meta: flush_handlers

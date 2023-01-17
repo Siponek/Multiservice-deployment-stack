@@ -1,1 +1,7 @@
 ---
+# Restarting nfs-kernel-server
+- name: Restart nfs-kernel-server
+  ansible.builtin.service:
+    name: nfs-kernel-server
+    state: restarted
+  when: inventory_hostname in groups['nfs_servers']

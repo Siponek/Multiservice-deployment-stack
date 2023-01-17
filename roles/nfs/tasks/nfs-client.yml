@@ -1,0 +1,23 @@
+---
+- name: Install nfs-common on nfs_clients
+  ansible.builtin.apt:
+    name: nfs-common
+    state: present
+
+- name: Add nfs server to /etc/fstab
+  ansible.builtin.lineinfile:
+    path: /etc/fstab
+    line: "{{ hostvars['node1']['vars']['storage_network_ip'] }}:{{ nfs_share_path }} {{ nfs_share_path }} nfs rw,sync,hard 0 0"
+    state: present
+    # create: true
+    # owner: root
+    # group: root
+    # mode: 0644
+
+- name: Mount nfs share
+  ansible.posix.mount:
+    src: "{{ hostvars['node1']['vars']['storage_network_ip'] }}:{{ nfs_share_path }}"
+    path: "{{ nfs_share_path }}"
+    opts: rw,sync,hard
+    state: mounted
+    fstype: nfs

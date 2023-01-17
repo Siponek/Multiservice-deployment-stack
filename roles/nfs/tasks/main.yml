@@ -1,1 +1,14 @@
 ---
+- name: Create /data folder if it doesn't exist
+  ansible.builtin.file:
+    path: "{{ nfs_share_path }}"
+    state: directory
+    mode: 0755
+
+- name: Install NFS server
+  ansible.builtin.include_tasks: nfs-server.yml
+  when: inventory_hostname in groups['nfs_servers']
+
+- name: Install NFS client
+  ansible.builtin.include_tasks: nfs-client.yml
+  when: inventory_hostname in groups['nfs_clients']
