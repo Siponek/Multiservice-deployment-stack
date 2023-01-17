@@ -1,7 +1,7 @@
-node1_ip: "change.me.10"
-node1_user: "your_user"
+node1_ip: "192.168.50.10"
+node1_user: "your_vm1_user"
 
-node2_ip: "change.me.20"
-node2_user: "your_user"
+node2_ip: "192.168.50.20"
+node2_user: "your_vm2_user"
 
 ssh_private_key_path: "~/.ssh/vcc/id_vcc"
