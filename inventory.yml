@@ -1,6 +1,7 @@
 all:
   hosts:
     node1:
+      name: node1
       ansible_host: "{{ node1_ip }}"
       ansible_port: 22
       ansible_user: "{{ node1_user }}"
@@ -10,8 +11,9 @@ all:
         -o UserKnownHostsFile=/dev/null
         -o StrictHostKeyChecking=no
       vars:
-        storage_network_ip: 10.255.255.20
+        storage_network_ip: 10.255.255.10
     node2:
+      name: node2
       ansible_host: "{{ node2_ip }}"
       ansible_port: 22
       ansible_user: "{{ node2_user }}"
@@ -22,16 +24,16 @@ all:
         -o StrictHostKeyChecking=no
       vars:
         storage_network_ip: 10.255.255.20
-    children:
-      nfs-servers:
-        hosts:
-          node1:
-      nfs-clients:
-        hosts:
-          node2:
-      nfs-users:
-        children:
-          nfs-servers:
-          nfs-clients:
-        vars:
-          nfs_share _path: /srv/nfs
+  children:
+    nfs_servers:
+      hosts:
+        node1:
+    nfs_clients:
+      hosts:
+        node2:
+    nfs_users:
+      hosts:
+        node1:
+        node2:
+      vars:
+        nfs_share_path: /data
