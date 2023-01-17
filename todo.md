@@ -1,7 +1,7 @@
 # Todo
 
 - [x] VMs network and setup
-- [ ] NFS Share
+- [x] NFS Share
 - [ ] Docker
 - [ ] Docker swarm
 - [ ] Docker registry
@@ -15,3 +15,5 @@
   - [ ] Metrics server
   - [ ] Log storage server
   - [ ] Dashboarding
+
+![13% done](https://geps.dev/progress/13)
