@@ -16,5 +16,5 @@ Exam project
 
 In the project root:
 
-- create a `variables.yml` to fit your VMs parameters (see [variables.example.yml](variables.example.yml)
+- create a `variables.yml` to fit your VMs parameters (see [variables.example.yml](variables.example.yml))
 - create a `secrets.yml` with your VMs sudo passwords (see [secrets.example.yml](secrets.example.yml))
