@@ -37,3 +37,19 @@ all:
         node2:
       vars:
         nfs_share_path: /data
+    
+    swarm_managers:
+      hosts:
+        node1:
+    swarm_workers:
+      hosts:
+        node2:
+    swarm_users:
+      hosts:
+        node1:
+        node2:
+      vars:
+        docker_swarm_manager_ip: "{{ node1_ip }}"
+        docker_swarm_worker_ip: "{{ node2_ip }}"
+        docker_swarm_manager_port: 2377
+        docker_swarm_worker_port: 2376

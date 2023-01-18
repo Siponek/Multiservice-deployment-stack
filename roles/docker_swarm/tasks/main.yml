@@ -1,1 +1,32 @@
 ---
+# install python3-pip
+- name: Install python3-pip
+  ansible.builtin.apt:
+    name: python3-pip
+    state: present
+
+- name: Install dockerSDK with pip3
+  ansible.builtin.pip:
+    name: docker
+    state: present
+
+- name: Init a new swarm with default parameters on node1
+  community.docker.docker_swarm:
+    state: present
+    advertise_addr: '{{ ansible_host }}'
+  register: result
+  when: inventory_hostname == 'node1'
+
+- name: Get swarm facts from manager nodes
+  ansible.builtin.set_fact:
+    join_token_manager: "{{ hostvars[groups['swarm_managers'][0]].result.swarm_facts.JoinTokens.Manager }}"
+    join_token_worker: "{{ hostvars[groups['swarm_managers'][0]].result.swarm_facts.JoinTokens.Worker }}"
+    swarm_remote_address: "{{ hostvars[groups['swarm_managers'][0]].result.swarm_facts.RemoteManagers[0].Addr }}"
+
+- name: Join a swarm as a worker on groups 'nfs_clients'
+  community.docker.docker_swarm:
+    state: join
+    advertise_addr: '{{ ansible_host }}'
+    join_token: '{{ join_token_worker }}'
+    remote_addrs: '{{ swarm_remote_address }}'
+  when: inventory_hostname in groups['swarm_workers']
