@@ -4,11 +4,12 @@
     name: nfs-common
     state: present
 
-- name: Mount nfs share
+- name: Mount nfs share on nfs_clients
   ansible.posix.mount:
     src: "{{ hostvars['node1']['vars']['storage_network_ip'] }}:{{ nfs_share_path }}"
     # mount 10.255.255.10:/data /data nfs rw,sync,hard 0 0
     path: "{{ nfs_share_path }}"
     opts: rw,sync,hard
     state: mounted
+    boot: true
     fstype: nfs
