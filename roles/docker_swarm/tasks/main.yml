@@ -15,7 +15,7 @@
     state: present
     advertise_addr: '{{ ansible_host }}'
   register: result
-  when: inventory_hostname == 'node1'
+  when: inventory_hostname in groups['swarm_managers'][0]
 
 - name: Get swarm facts from manager nodes
   ansible.builtin.set_fact:
