@@ -10,8 +10,6 @@ all:
       ansible_ssh_common_args: >-
         -o UserKnownHostsFile=/dev/null
         -o StrictHostKeyChecking=no
-      vars:
-        storage_network_ip: 10.255.255.10
     node2:
       name: node2
       ansible_host: "{{ node2_ip }}"
@@ -22,15 +20,19 @@ all:
       ansible_ssh_common_args: >-
         -o UserKnownHostsFile=/dev/null
         -o StrictHostKeyChecking=no
-      vars:
-        storage_network_ip: 10.255.255.20
+  
   children:
+    
     nfs_servers:
       hosts:
         node1:
+      vars:
+        nfs_address: 10.255.255.10
     nfs_clients:
       hosts:
         node2:
+      vars:
+        nfs_address: 10.255.255.20
     nfs_users:
       hosts:
         node1:
