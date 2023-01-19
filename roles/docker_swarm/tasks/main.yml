@@ -17,12 +17,12 @@
   register: result
   when: inventory_hostname in groups['swarm_managers'][0]
 
-- name: Get swarm facts from manager nodes
+- name: Get swarm facts from first manager node
   ansible.builtin.set_fact:
     join_token_manager: "{{ hostvars[groups['swarm_managers'][0]].result.swarm_facts.JoinTokens.Manager }}"
     join_token_worker: "{{ hostvars[groups['swarm_managers'][0]].result.swarm_facts.JoinTokens.Worker }}"
     swarm_remote_address: "{{ hostvars[groups['swarm_managers'][0]]['ansible_host'] }}"
-  when: inventory_hostname in groups['swarm_users']
+  when: inventory_hostname in groups['swarm_clients']
 
 - name: Join a swarm as a worker on groups 'nfs_clients'
   community.docker.docker_swarm:
