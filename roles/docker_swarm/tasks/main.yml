@@ -22,7 +22,7 @@
     join_token_manager: "{{ hostvars[groups['swarm_managers'][0]].result.swarm_facts.JoinTokens.Manager }}"
     join_token_worker: "{{ hostvars[groups['swarm_managers'][0]].result.swarm_facts.JoinTokens.Worker }}"
     swarm_remote_address: "{{ hostvars[groups['swarm_managers'][0]]['ansible_host'] }}"
-  when: inventory_hostname in groups['swarm_clients']
+  when: inventory_hostname in groups['swarm_workers']
 
 - name: Join a swarm as a worker on groups 'nfs_clients'
   community.docker.docker_swarm:
