@@ -23,6 +23,7 @@ all:
   
   children:
     
+    # NFS
     nfs_servers:
       hosts:
         node1:
@@ -33,10 +34,21 @@ all:
         node2:
       vars:
         nfs_address: 10.255.255.20
+    nfs_users:
+      children:
+        nfs_servers:
+        nfs_clients:
+      vars:
+        nfs_share_path: /data
     
+    # Docker Swarm
     swarm_managers:
       hosts:
         node1:
     swarm_workers:
       hosts:
         node2:
+    swarm_users:
+      children:
+        swarm_managers:
+        swarm_workers:
