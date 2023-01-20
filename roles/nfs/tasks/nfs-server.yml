@@ -13,6 +13,7 @@
 - name: Set export for nfs_server node
   ansible.builtin.set_fact:
     etc_exports_line: "/data {{ nfs_address }}(rw,sync,no_subtree_check)"
+  when: inventory_hostname == groups['nfs_servers'][0]
 
 - name: Add nfs_clients to export
   ansible.builtin.set_fact:
@@ -31,9 +32,6 @@
   ansible.builtin.lineinfile:
     # line => /data 10.255.255.10(rw,sync,no_subtree_check) 10.255.255.20(rw,no_root_squash,sync,no_subtree_check)
     path: /etc/exports
-    # line: "{{ nfs_share_path }} \
-    #       {{ storage_network_ip }}(rw,sync,no_subtree_check) \
-    #       {{ hostvars['node2']['vars']['storage_network_ip'] }}(rw,no_root_squash,sync,no_subtree_check)"
     line: "{{ etc_exports_line }}"
     state: present
     create: true
