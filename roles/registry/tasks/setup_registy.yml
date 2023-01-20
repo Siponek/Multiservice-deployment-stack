@@ -1,0 +1,43 @@
+---
+- name: Set facts for registry url
+  ansible.builtin.set_fact:
+    docker_registry_ip: "{{ hostvars[groups['swarm_managers'][0]]['ansible_host'] }}"
+    docker_registry_url: "{{ hostvars[groups['swarm_managers'][0]]['ansible_host'] }}:{{ registry_port }}"
+
+- name: Create /data/docker-registry
+  ansible.builtin.file:
+    path: /data/docker-registry
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+  when: inventory_hostname == groups['nfs_servers'][0]
+
+- name: Install passlib
+  ansible.builtin.pip:
+    name: passlib
+    state: present
+
+- name: Create user and password for Docker registry
+  community.general.htpasswd:
+    path: "{{ registry_htpasswd_path }}"
+    username: "{{ registry_username }}"
+    password: "{{ registry_password }}"
+    state: present
+    mode: 0644
+
+- name: Set deamon.json
+  ansible.builtin.copy:
+    dest: /etc/docker/daemon.json
+    content: |
+      {
+        "insecure-registries": ["{{ docker_registry_url }}"]
+      }
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Restart docker
+  ansible.builtin.service:
+    name: docker
+    state: restarted

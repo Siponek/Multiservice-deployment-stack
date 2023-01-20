@@ -1,25 +1,46 @@
 ---
-- name: Create /data/docker-registry
-  ansible.builtin.file:
-    path: /data/docker-registry
-    state: directory
-    owner: root
-    group: root
-    mode: 0755
-  when: inventory_hostname == groups['nfs_servers'][0]
-
-- name: Set facts for registry url
-  ansible.builtin.set_fact:
-    docker_registry_ip: "{{ hostvars[groups['swarm_managers'][0]]['ansible_host'] }}"
-    docker_registry_url: "{{ hostvars[groups['swarm_managers'][0]]['ansible_host'] }}:5000"
+- name: Setup
+  ansible.builtin.include_tasks: setup_registy.yml
 
 - name: Install Docker registry
   community.docker.docker_swarm_service:
     name: registry
     image: "{{ registry_image }}"
+    publish:
+      - published_port: "{{ registry_port }}"
+        target_port: "5000"
+    replicas: 1
+    mounts:
+      - source: "{{ registry_volume }}"
+        target: /var/lib/registry
+      - source: "{{ registry_htpasswd_path }}"
+        target: /auth
     labels:
-      com.docker.swarm.constraints: "node.hostname==node1"
-      com.docker.swarm.service.publish: "{{ registry_port }}:5000"
-      com.docker.swarm.service.mount: "{{ registry_volume }}:/var/lib/registry"
+      # set user and password for registry
+      com.docker.swarm.service.env: "
+        HTTP_ADDR: :5000
+        REGISTRY_HTTP_ADDR: :5000
+        REGISTRY_AUTH: htpasswd
+        REGISTRY_AUTH_HTPASSWD_REALM: Registry Realm
+        REGISTRY_AUTH_HTPASSWD_PATH: {{ registry_htpasswd_path }}
+        REGISTRY_HTTP_SECRET: ALongRandomSecretForRegistry
+        REGISTRY_STORAGE_DELETE_ENABLED: true
+        DOCKER_REGISTRY_HTTP_TLS_VERIFY: false
+        HTTPS: false
+        "
     state: present
   when: inventory_hostname == groups['swarm_managers'][0]
+
+- name: Wait for registry to start
+  ansible.builtin.wait_for:
+    host: "{{ inventory_hostname }}"
+    port: "{{ registry_port }}"
+    state: started
+    timeout: 60
+    delay: 5
+
+- name: Login to registry
+  community.docker.docker_login:
+    registry_url: "{{ docker_registry_url }}"
+    username: "{{ registry_username }}"
+    password: "{{ registry_password }}"
