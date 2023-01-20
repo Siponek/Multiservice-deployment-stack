@@ -1,1 +1,2 @@
 ---
+registry_volume: /data/docker-registry

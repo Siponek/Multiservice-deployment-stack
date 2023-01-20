@@ -1,1 +1,4 @@
 ---
+registry_image: distribution/distribution:2.8.1
+registry_port: 5000
+registry_volume: /registry
