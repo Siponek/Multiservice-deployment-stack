@@ -5,23 +5,35 @@
     repository: "{{ docker_registry_url }}/keycloak:20.0.1"
     source: pull
   when: inventory_hostname == groups['swarm_managers'][0]
+ 
+#wait for the image to be pulled 
+- name: Wait for image to be pulled
+  community.docker.docker_image_info:
+    name: "{{ docker_registry_url }}/keycloak:20.0.1"
+  register: keycloak_image
+  until: keycloak_image.images | length > 0
+  retries: 10
+  delay: 5
+  when: inventory_hostname == groups['swarm_managers'][0]
+
+- name: Push keycloack to registry
+  community.docker.docker_image:
+    name: keycloak
+    source: local
+    repository: "{{ docker_registry_url }}/keycloak:20.0.1"
+    push: true
+  when: inventory_hostname == groups['swarm_managers'][0]
 
 - name: Start Keycloak
   community.docker.docker_swarm_service:
     name: "keycloak"
     image: "{{ docker_registry_url }}/keycloak:20.0.1"
     env:
-      NEXTCLOUD_CONTAINER_NAME: "nextcloud"
       KEYCLOAK_CONTAINER_NAME: "keycloak"
-      KEYCLOAK_ADMIN_USER: "{{ keycloak_username }}"
-      KEYCLOAK_ADMIN_PASSWORD: "{{ keycloak_password }}"
-      SAMPLE_USER_PASSWORD: "itsdifficult"
-      OIDC_CLIENT_ID: "nextcloud"
-      OIDC_PROVIDER_URL: "http://{{ ansible_host }}:8080/realms/vcc"
-      OIDC_LOGOUT_URL: "http://{{ ansible_host }}/apps/oidc_login/oidc"
-    networks:
-      - name: host
-    mode: global
+      KEYCLOAK_ADMIN: "{{ keycloak_username }}"
+      KEYCLOAK_ADMIN_PASSWORD: "{{ keycloak_password }}" 
+      KEYCLOACK_DB_URL: "jdbc:postgresql://{{ansible_host}}:5432/keycloak"
+      KEYCLOACK_DB_PASSWORD: "{{postgres_password}}"
     publish:
       - mode: host
         published_port: 8080
@@ -31,4 +43,7 @@
       delay: 5s
       max_attempts: 3
       window: 120s
+    networks:
+      - name: host
+    args: "start-dev"
   when: inventory_hostname == groups['swarm_managers'][0]

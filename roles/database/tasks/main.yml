@@ -15,6 +15,24 @@
     source: pull
   when: inventory_hostname == groups['swarm_managers'][0]
 
+#wait for the image to be pulled 
+- name: Wait for postgres image
+  community.docker.docker_image_info:
+    name: "{{ docker_registry_url }}/postgres:15.1"
+  register: postgres_image
+  until: postgres_image.images | length > 0
+  retries: 10
+  delay: 10
+  when: inventory_hostname == groups['swarm_managers'][0]
+
+- name: Push postgres to registry
+  community.docker.docker_image:
+    name: keycloak
+    source: local
+    repository: "{{ docker_registry_url }}/postgres:15.1"
+    push: true
+  when: inventory_hostname == groups['swarm_managers'][0]
+
 - name: Start postgres on swarm
   community.docker.docker_swarm_service:
     name: "postgres"
