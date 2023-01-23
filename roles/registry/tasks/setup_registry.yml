@@ -6,7 +6,7 @@
 
 - name: Create /data/docker-registry
   ansible.builtin.file:
-    path: /data/docker-registry
+    path: "{{ registry_volume }}"
     state: directory
     owner: root
     group: root
@@ -26,6 +26,7 @@
     state: present
     mode: 0644
 
+# Setting deamon to accept insecure connections and use the registry as a mirror
 - name: Set deamon.json
   ansible.builtin.copy:
     dest: /etc/docker/daemon.json
@@ -33,6 +34,7 @@
       {
         "insecure-registries": ["{{ docker_registry_url }}"]
       }
+    force: true
     owner: root
     group: root
     mode: 0644

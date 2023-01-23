@@ -1,0 +1,37 @@
+- name: Create registry directory
+  ansible.builtin.file:
+    path: "{{ registry_cache_volume }}"
+    state: directory
+    mode: 0755
+
+- name: Configure registry cache
+  ansible.builtin.copy:
+    dest: "{{ registry_cache_volume }}/config.yml"
+    content: |
+      proxy:
+        remoteurl: \"{{ docker_registry_url }}\"
+        username: \"{{ registry_username }}\"
+        password: \"{{ registry_password }}\"
+    force: true
+    owner: root
+    group: root
+    mode: 0644
+
+# Setting deamon to accept insecure connections and use the registry as a mirror
+- name: Set deamon.json
+  ansible.builtin.copy:
+    dest: /etc/docker/daemon.json
+    content: |
+      {
+        "insecure-registries": ["{{ docker_registry_url }}"],
+        "registry-mirrors": ["{{ docker_registry_url }}"]
+      }
+    force: true
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Restart docker
+  ansible.builtin.service:
+    name: docker
+    state: restarted

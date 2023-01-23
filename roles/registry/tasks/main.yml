@@ -1,6 +1,6 @@
 ---
 - name: Setup
-  ansible.builtin.include_tasks: setup_registy.yml
+  ansible.builtin.include_tasks: setup_registry.yml
 
 - name: Install Docker registry
   community.docker.docker_swarm_service:
@@ -9,6 +9,9 @@
     publish:
       - published_port: "{{ registry_port }}"
         target_port: "5000"
+    placement:
+      constraints:
+        - node.role == manager
     replicas: 1
     mounts:
       - source: "{{ registry_volume }}"
@@ -31,13 +34,16 @@
     state: present
   when: inventory_hostname == groups['swarm_managers'][0]
 
+# - name: Set up the registry cache
+#   ansible.builtin.include_tasks: setup_registry_cache.yml
+
 - name: Wait for registry to start
   ansible.builtin.wait_for:
-    host: "{{ inventory_hostname }}"
+    host: "{{ docker_registry_ip }}"
     port: "{{ registry_port }}"
     state: started
-    timeout: 60
-    delay: 5
+    timeout: 15
+    delay: 1
 
 - name: Login to registry
   community.docker.docker_login:
