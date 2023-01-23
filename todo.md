@@ -2,9 +2,9 @@
 
 - [x] VMs network and setup
 - [x] NFS Share
-- [ ] Docker
-- [ ] Docker swarm
-- [ ] Docker registry
+- [x] Docker
+- [x] Docker swarm
+- [x] Docker registry
 - [ ] Docker registry cache
 - [ ] PostgreSQL
 - [ ] SSO - Keycloak
