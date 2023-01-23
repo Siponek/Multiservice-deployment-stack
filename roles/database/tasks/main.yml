@@ -27,8 +27,8 @@
 
 - name: Push postgres to registry
   community.docker.docker_image:
-    name: keycloak
-    source: local
+    name: postgres:15.1
+    source: pull
     repository: "{{ docker_registry_url }}/postgres:15.1"
     push: true
   when: inventory_hostname == groups['swarm_managers'][0]

@@ -19,7 +19,7 @@
 - name: Push keycloack to registry
   community.docker.docker_image:
     name: keycloak
-    source: local
+    source: pull
     repository: "{{ docker_registry_url }}/keycloak:20.0.1"
     push: true
   when: inventory_hostname == groups['swarm_managers'][0]
