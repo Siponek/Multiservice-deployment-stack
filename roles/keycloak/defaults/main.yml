@@ -1,1 +1,3 @@
 ---
+keycloak_port: 8080
+keycloak_url: "http://{{ keycloak_node }}:{{ keycloak_port }}"

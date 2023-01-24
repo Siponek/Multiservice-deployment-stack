@@ -6,7 +6,7 @@
     source: pull
   when: inventory_hostname == groups['swarm_managers'][0]
 
-- name: Wait for keycloack image
+- name: Wait for keycloak image
   community.docker.docker_image_info:
     name: "{{ docker_registry_url }}/keycloak:20.0.1"
   register: keycloak_image
@@ -15,7 +15,7 @@
   delay: 5
   when: inventory_hostname == groups['swarm_managers'][0]
 
-- name: Push keycloack to registry
+- name: Push keycloak to registry
   community.docker.docker_image:
     name: "{{ docker_registry_url }}/keycloak:20.0.1"
     repository: "{{ docker_registry_url }}/keycloak:20.0.1"
@@ -43,7 +43,16 @@
       KEYCLOAK_CONTAINER_NAME: "keycloak"
       KEYCLOAK_ADMIN: "{{ keycloak_username }}"
       KEYCLOAK_ADMIN_PASSWORD: "{{ keycloak_password }}"
-      KEYCLOACK_DB_URL: "jdbc:postgresql://{{ ansible_host }}:5432/keycloak"
-      KEYCLOACK_DB_PASSWORD: "{{ postgres_password }}"
+      KEYCLOAK_DB_URL: "jdbc:postgresql://{{ ansible_host }}:5432/keycloak"
+      KEYCLOAK_DB_PASSWORD: "{{ postgres_password }}"
     args: "start-dev"
   when: inventory_hostname == groups['swarm_managers'][0]
+
+- name: Create vcc keycloak realm
+  community.general.keycloak_realm:
+    auth_keycloak_url: "http://{{ ansible_host }}:{{ keycloak_port }}/admin/"
+    auth_realm: master
+    auth_username: "{{ keycloak_username }}"
+    auth_password: "{{ keycloak_password }}"
+    realm: vcc
+    state: present
