@@ -15,22 +15,21 @@
     source: pull
   when: inventory_hostname == groups['swarm_managers'][0]
 
-#wait for the image to be pulled 
 - name: Wait for postgres image
   community.docker.docker_image_info:
     name: "{{ docker_registry_url }}/postgres:15.1"
   register: postgres_image
   until: postgres_image.images | length > 0
   retries: 10
-  delay: 10
+  delay: 5
   when: inventory_hostname == groups['swarm_managers'][0]
 
 - name: Push postgres to registry
   community.docker.docker_image:
     name: postgres:15.1
-    source: pull
     repository: "{{ docker_registry_url }}/postgres:15.1"
-    push: true 
+    source: pull
+    push: true
   when: inventory_hostname == groups['swarm_managers'][0]
 
 - name: Start postgres on swarm
@@ -43,6 +42,8 @@
     publish:
       - published_port: "{{ postgres_port }}"
         target_port: "5432"
+    restart_config:
+      condition: on-failure
     env:
       POSTGRES_PASSWORD: "{{ postgres_password }}"
       PGDATA: "/var/lib/postgresql/data/pgdata"

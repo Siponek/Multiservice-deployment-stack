@@ -5,11 +5,10 @@
     repository: "{{ docker_registry_url }}/keycloak:20.0.1"
     source: pull
   when: inventory_hostname == groups['swarm_managers'][0]
- 
-#wait for the image to be pulled 
-- name: Wait for image to be pulled
+
+- name: Wait for keycloack image
   community.docker.docker_image_info:
-  name: "{{ docker_registry_url }}/keycloak:20.0.1"
+    name: "{{ docker_registry_url }}/keycloak:20.0.1"
   register: keycloak_image
   until: keycloak_image.images | length > 0
   retries: 10
@@ -19,8 +18,8 @@
 - name: Push keycloack to registry
   community.docker.docker_image:
     name: "{{ docker_registry_url }}/keycloak:20.0.1"
-    source: local
     repository: "{{ docker_registry_url }}/keycloak:20.0.1"
+    source: pull
     push: true
     debug: true
   when: inventory_hostname == groups['swarm_managers'][0]
@@ -29,16 +28,10 @@
   community.docker.docker_swarm_service:
     name: "keycloak"
     image: "{{ docker_registry_url }}/keycloak:20.0.1"
-    env:
-      KEYCLOAK_CONTAINER_NAME: "keycloak"
-      KEYCLOAK_ADMIN: "{{ keycloak_username }}"
-      KEYCLOAK_ADMIN_PASSWORD: "{{ keycloak_password }}" 
-      KEYCLOACK_DB_URL: "jdbc:postgresql://{{ansible_host}}:5432/keycloak"
-      KEYCLOACK_DB_PASSWORD: "{{postgres_password}}"
     publish:
       - mode: host
         published_port: 8080
-        target_port: 8080
+        target_port: 8443
     restart_config:
       condition: on-failure
       delay: 5s
@@ -46,5 +39,11 @@
       window: 120s
     networks:
       - name: host
+    env:
+      KEYCLOAK_CONTAINER_NAME: "keycloak"
+      KEYCLOAK_ADMIN: "{{ keycloak_username }}"
+      KEYCLOAK_ADMIN_PASSWORD: "{{ keycloak_password }}"
+      KEYCLOACK_DB_URL: "jdbc:postgresql://{{ ansible_host }}:5432/keycloak"
+      KEYCLOACK_DB_PASSWORD: "{{ postgres_password }}"
     args: "start-dev"
   when: inventory_hostname == groups['swarm_managers'][0]
