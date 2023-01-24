@@ -43,8 +43,9 @@
       - published_port: "{{ postgres_port }}"
         target_port: "5432"
     restart_config:
-      condition: on-failure
+      condition: any
     env:
       POSTGRES_PASSWORD: "{{ postgres_password }}"
       PGDATA: "/var/lib/postgresql/data/pgdata"
+    state: present
   when: inventory_hostname == groups['swarm_managers'][0]

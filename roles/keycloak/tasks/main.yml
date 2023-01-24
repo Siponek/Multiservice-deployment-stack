@@ -29,16 +29,10 @@
     name: "keycloak"
     image: "{{ docker_registry_url }}/keycloak:20.0.1"
     publish:
-      - mode: host
-        published_port: 8080
+      - published_port: 8080
         target_port: 8443
     restart_config:
-      condition: on-failure
-      delay: 5s
-      max_attempts: 3
-      window: 120s
-    networks:
-      - name: host
+      condition: any
     env:
       KEYCLOAK_CONTAINER_NAME: "keycloak"
       KEYCLOAK_ADMIN: "{{ keycloak_username }}"
@@ -48,11 +42,42 @@
     args: "start-dev"
   when: inventory_hostname == groups['swarm_managers'][0]
 
-- name: Create vcc keycloak realm
-  community.general.keycloak_realm:
-    auth_keycloak_url: "http://{{ ansible_host }}:{{ keycloak_port }}/admin/"
-    auth_realm: master
-    auth_username: "{{ keycloak_username }}"
-    auth_password: "{{ keycloak_password }}"
-    realm: vcc
-    state: present
+
+# ### Get access token ###
+# - name: Get kekycloak access token
+#   ansible.builtin.uri:
+#     url: "{{ keycloak_url }}/realms/master/protocol/openid-connect/token"
+#     method: POST
+#     body_format: form-urlencoded
+#     body:
+#       username: "{{ keycloak_username }}"
+#       password: "{{ keycloak_password }}"
+#       grant_type: password
+#       client_id: admin-cli
+#     status_code: 200
+#     return_content: true
+#     validate_certs: false
+#   register: keycloak_access_token
+
+# - name: Set keycloak access token
+#   ansible.builtin.set_fact:
+#     keycloak_access_token: "{{ keycloak_access_token.json.access_token }}"
+
+# - name: Print keycloak access token
+#   ansible.builtin.debug:
+#     msg: "{{ keycloak_access_token }}"
+
+# ### Create realm ###
+# # - name: Create vcc realm
+# #   ansible.builtin.uri:
+# #     url: "http://{{ ansible_host }}:8080/auth/admin/realms"
+# #     method: POST
+# #     body_format: json
+# #     body:
+# #       id: vcc
+# #       realm: vcc
+# #       enabled: true
+# #     status_code: 201
+# #     return_content: yes
+# #     validate_certs: no
+# #     headers:
