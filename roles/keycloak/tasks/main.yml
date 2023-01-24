@@ -29,10 +29,13 @@
     name: "keycloak"
     image: "{{ docker_registry_url }}/keycloak:20.0.1"
     publish:
-      - published_port: 8080
+      - mode: host
+        published_port: 8080
         target_port: 8443
+    networks:
+      - name: host
     restart_config:
-      condition: any
+      condition: on-failure
     env:
       KEYCLOAK_CONTAINER_NAME: "keycloak"
       KEYCLOAK_ADMIN: "{{ keycloak_username }}"
