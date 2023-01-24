@@ -30,7 +30,7 @@
     name: postgres:15.1
     source: pull
     repository: "{{ docker_registry_url }}/postgres:15.1"
-    push: true
+    push: true 
   when: inventory_hostname == groups['swarm_managers'][0]
 
 - name: Start postgres on swarm

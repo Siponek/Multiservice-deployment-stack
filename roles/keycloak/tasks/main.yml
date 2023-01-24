@@ -9,7 +9,7 @@
 #wait for the image to be pulled 
 - name: Wait for image to be pulled
   community.docker.docker_image_info:
-    name: "{{ docker_registry_url }}/keycloak:20.0.1"
+  name: "{{ docker_registry_url }}/keycloak:20.0.1"
   register: keycloak_image
   until: keycloak_image.images | length > 0
   retries: 10
@@ -18,10 +18,11 @@
 
 - name: Push keycloack to registry
   community.docker.docker_image:
-    name: "keycloak:20.0.1"
-    source: pull
+    name: "{{ docker_registry_url }}/keycloak:20.0.1"
+    source: local
     repository: "{{ docker_registry_url }}/keycloak:20.0.1"
     push: true
+    debug: true
   when: inventory_hostname == groups['swarm_managers'][0]
 
 - name: Start Keycloak
