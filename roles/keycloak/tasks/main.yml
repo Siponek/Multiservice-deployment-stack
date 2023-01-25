@@ -25,6 +25,15 @@
     debug: true
   when: inventory_hostname == groups['swarm_managers'][0]
 
+- name: Create /data/keycloak
+  ansible.builtin.file:
+    path: "{{ keycloak_data_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+  when: inventory_hostname == groups['swarm_managers'][0]
+    
 - name: Start Keycloak
   community.docker.docker_swarm_service:
     name: "keycloak"
@@ -48,3 +57,4 @@
       - name: host
     args: "start-dev"
   when: inventory_hostname == groups['swarm_managers'][0]
+

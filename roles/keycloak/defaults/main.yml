@@ -1,1 +1,2 @@
 ---
+keycloak_data_dir: /data/keycloak
