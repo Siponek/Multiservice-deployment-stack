@@ -8,11 +8,6 @@
     mode: 0755
   when: inventory_hostname == groups['nfs_servers'][0]
 
-- name: Install psycopg2
-  ansible.builtin.pip:
-    name: psycopg2-binary
-    state: present
-
 - name: Pull postgres image
   community.docker.docker_image:
     name: postgres:15.1
