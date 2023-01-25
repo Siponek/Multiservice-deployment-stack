@@ -1,3 +1,4 @@
 ---
 postgres_volume: /data/postgresql
 postgres_port: 5432
+postgres_username: postgres

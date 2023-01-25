@@ -2,7 +2,7 @@
 collections:
   - name: community.docker
   - name: community.general
+  - name: community.postgresql
   # - name: community.kubernetes
-  # - name: community.postgresql
 roles:
   - name: geerlingguy.docker

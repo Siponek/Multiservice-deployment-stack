@@ -32,7 +32,33 @@
     group: root
     mode: 0755
   when: inventory_hostname == groups['swarm_managers'][0]
-    
+
+# - name: Get the swarm unlock key
+#   community.docker.docker_swarm_info:
+#     services: true
+#     services_filters:
+#       name: postgres
+#   register: result
+#   when: inventory_hostname == groups['swarm_managers'][0]
+
+# - name: Print result
+#   ansible.builtin.debug:
+#     msg: "{{ result }}"
+
+# - name: wait 60 se
+#   ansible.builtin.wait_for:
+#     timeout: 60
+
+- name: Create a new database
+  community.postgresql.postgresql_db:
+    name: keycloak
+    owner: "{{ postgres_username }}"
+    state: present
+    login_user: "{{ postgres_username }}"
+    login_password: "{{ postgres_password }}"
+    login_host: postgres
+    port: 5432
+
 - name: Start Keycloak
   community.docker.docker_swarm_service:
     name: "keycloak"
@@ -49,10 +75,12 @@
     restart_config:
       condition: on-failure
     env:
-      KEYCLOAK_CONTAINER_NAME: "keycloak"
+      KC_CONTAINER_NAME: "keycloak"
       KEYCLOAK_ADMIN: "{{ keycloak_username }}"
       KEYCLOAK_ADMIN_PASSWORD: "{{ keycloak_password }}"
-      KEYCLOAK_DB_URL: "jdbc:postgresql://{{ ansible_host }}:5432/keycloak"
-      KEYCLOAK_DB_PASSWORD: "{{ postgres_password }}"
+      KC_DB_URL: "jdbc:postgresql://{{ ansible_host }}:5432/keycloak"
+      KC_DB_USERNAME: "{{ postgres_username }}"
+      KC_DB_PASSWORD: "{{ postgres_password }}"
+      KC_DB: "postgres"
     args: "start-dev"
   when: inventory_hostname == groups['swarm_managers'][0]
