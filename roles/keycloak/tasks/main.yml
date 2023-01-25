@@ -28,6 +28,9 @@
   community.docker.docker_swarm_service:
     name: "keycloak"
     image: "{{ docker_registry_url }}/keycloak:20.0.1"
+    mounts:
+      - source: /data/keycloak
+        target: /opt/keycloak/data/import
     publish:
       - mode: host
         published_port: 8080
