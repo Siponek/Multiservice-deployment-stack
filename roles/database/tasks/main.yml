@@ -10,7 +10,7 @@
 
 - name: Install psycopg2
   ansible.builtin.pip:
-    name: psycopg2
+    name: psycopg2-binary
     state: present
 
 - name: Pull postgres image
@@ -37,6 +37,24 @@
     push: true
   when: inventory_hostname == groups['swarm_managers'][0]
 
+- name: Create directory /data/postgres-init
+  ansible.builtin.file:
+    path: /data/postgres-init
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+  when: inventory_hostname == groups['swarm_managers'][0]
+
+- name: Copy init.sql to /data/postgres-init using template
+  ansible.builtin.template:
+    src: init.sql.j2
+    dest: /data/postgres-init/init.sql
+    owner: root
+    group: root
+    mode: 0644
+  when: inventory_hostname == groups['swarm_managers'][0]
+
 - name: Start postgres on swarm
   community.docker.docker_swarm_service:
     name: "postgres"
@@ -44,6 +62,8 @@
     mounts:
       - source: "{{ postgres_volume }}"
         target: "/var/lib/postgresql/data"
+      - source: "/data/postgres-init"
+        target: "/docker-entrypoint-initdb.d/"
     publish:
       - published_port: "{{ postgres_port }}"
         target_port: "5432"

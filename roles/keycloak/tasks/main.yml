@@ -33,31 +33,14 @@
     mode: 0755
   when: inventory_hostname == groups['swarm_managers'][0]
 
-# - name: Get the swarm unlock key
-#   community.docker.docker_swarm_info:
-#     services: true
-#     services_filters:
-#       name: postgres
-#   register: result
-#   when: inventory_hostname == groups['swarm_managers'][0]
-
-# - name: Print result
-#   ansible.builtin.debug:
-#     msg: "{{ result }}"
-
-# - name: wait 60 se
-#   ansible.builtin.wait_for:
-#     timeout: 60
-
-- name: Create a new database
-  community.postgresql.postgresql_db:
-    name: keycloak
-    owner: "{{ postgres_username }}"
-    state: present
-    login_user: "{{ postgres_username }}"
-    login_password: "{{ postgres_password }}"
-    login_host: postgres
-    port: 5432
+- name: Copy realm-export.json to /data/keycloak using template
+  ansible.builtin.template:
+    src: realm-export.json
+    dest: /data/keycloak/realm-export.json
+    owner: root
+    group: root
+    mode: 0644
+  when: inventory_hostname == groups['swarm_managers'][0]
 
 - name: Start Keycloak
   community.docker.docker_swarm_service:
@@ -71,7 +54,8 @@
         published_port: 8080
         target_port: 8443
     networks:
-      - name: host
+      - name:
+          host
     restart_config:
       condition: on-failure
     env:
