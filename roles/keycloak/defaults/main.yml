@@ -1,2 +1,5 @@
 ---
+keycloak_port: 8080
+keycloak_host: "localhost"
+keycloak_url: "http://{{ keycloak_host }}:{{ keycloak_port }}"
 keycloak_data_dir: /data/keycloak

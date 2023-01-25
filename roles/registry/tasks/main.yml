@@ -1,4 +1,21 @@
 ---
+# Create usernames and passowrds for Docker registry
+- name: Install passlib
+  ansible.builtin.pip:
+    name: passlib
+    state: present
+
+- name: Create user and password for Docker registry
+  community.general.htpasswd:
+    path: "{{ registry_htpasswd_path }}"
+    username: "{{ registry_username }}"
+    password: "{{ registry_password }}"
+    state: present
+    mode: 0644
+
+# Launch setup tasks for registry
+# - setup_registry.yml for registry
+# - setup_registry_cache.yml for registry cache
 - name: Setup
   ansible.builtin.include_tasks: setup_registry.yml
 
@@ -19,23 +36,19 @@
       - source: "{{ registry_htpasswd_path }}"
         target: /auth
     labels:
-      # set user and password for registry
       com.docker.swarm.service.env: "
-        HTTP_ADDR: :5000
         REGISTRY_HTTP_ADDR: :5000
+        REGISTRY_HTTP_SECRET: {{ ALongRandomSecretForRegistry }}
         REGISTRY_AUTH: htpasswd
         REGISTRY_AUTH_HTPASSWD_REALM: Registry Realm
         REGISTRY_AUTH_HTPASSWD_PATH: {{ registry_htpasswd_path }}
-        REGISTRY_HTTP_SECRET: ALongRandomSecretForRegistry
+        REGISTRY_PROXY_REMOTEURL: https://registry-1.docker.io
+        REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY: /var/lib/registry
         REGISTRY_STORAGE_DELETE_ENABLED: true
-        DOCKER_REGISTRY_HTTP_TLS_VERIFY: false
-        HTTPS: false
+        REGISTRY_VALIDATION_DISABLED: true
         "
     state: present
   when: inventory_hostname == groups['swarm_managers'][0]
-
-# - name: Set up the registry cache
-#   ansible.builtin.include_tasks: setup_registry_cache.yml
 
 - name: Wait for registry to start
   ansible.builtin.wait_for:

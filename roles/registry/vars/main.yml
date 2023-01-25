@@ -1,4 +1,4 @@
 ---
 registry_volume: /data/docker-registry
+registry_cache_volume: /data/docker-registry-cache
 registry_htpasswd_path: /data/auth/htpasswd
-registry_cache_volume: /etc/docker/registry

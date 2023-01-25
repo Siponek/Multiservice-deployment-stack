@@ -1,21 +1,17 @@
+---
+- name: Set facts for registry url
+  ansible.builtin.set_fact:
+    docker_registry_ip: "{{ hostvars[groups['swarm_managers'][0]]['ansible_host'] }}"
+    docker_registry_url: "{{ hostvars[groups['swarm_managers'][0]]['ansible_host'] }}:{{ registry_port }}"
+
 - name: Create registry directory
   ansible.builtin.file:
     path: "{{ registry_cache_volume }}"
     state: directory
-    mode: 0755
-
-- name: Configure registry cache
-  ansible.builtin.copy:
-    dest: "{{ registry_cache_volume }}/config.yml"
-    content: |
-      proxy:
-        remoteurl: \"{{ docker_registry_url }}\"
-        username: \"{{ registry_username }}\"
-        password: \"{{ registry_password }}\"
-    force: true
     owner: root
     group: root
-    mode: 0644
+    mode: 0755
+  when: inventory_hostname == groups['nfs_servers'][0]
 
 # Setting deamon to accept insecure connections and use the registry as a mirror
 - name: Set deamon.json
@@ -24,7 +20,7 @@
     content: |
       {
         "insecure-registries": ["{{ docker_registry_url }}"],
-        "registry-mirrors": ["{{ docker_registry_url }}"]
+        "registry-mirrors": ["http://{{ docker_registry_url }}"]
       }
     force: true
     owner: root
