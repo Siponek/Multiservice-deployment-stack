@@ -47,8 +47,9 @@
     name: "keycloak"
     image: "{{ docker_registry_url }}/keycloak:20.0.1"
     mounts:
-      - source: /data/keycloak
-        target: /opt/keycloak/data/import
+      - source: /data/keycloak/realm-export.json
+        target: /opt/keycloak/data/import/main-realm.json
+        readonly: true
     publish:
       - mode: host
         published_port: 8080
@@ -66,5 +67,5 @@
       KC_DB_USERNAME: "{{ keycloak_username }}"
       KC_DB_PASSWORD: "{{ keycloak_password }}"
       KC_DB: "postgres"
-    args: "start-dev"
+    args: "start-dev --import-realm"
   when: inventory_hostname == groups['swarm_managers'][0]
