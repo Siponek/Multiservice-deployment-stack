@@ -63,8 +63,8 @@
       KEYCLOAK_ADMIN: "{{ keycloak_username }}"
       KEYCLOAK_ADMIN_PASSWORD: "{{ keycloak_password }}"
       KC_DB_URL: "jdbc:postgresql://{{ ansible_host }}:5432/keycloak"
-      KC_DB_USERNAME: "{{ postgres_username }}"
-      KC_DB_PASSWORD: "{{ postgres_password }}"
+      KC_DB_USERNAME: "{{ keycloak_username }}"
+      KC_DB_PASSWORD: "{{ keycloak_password }}"
       KC_DB: "postgres"
     args: "start-dev"
   when: inventory_hostname == groups['swarm_managers'][0]

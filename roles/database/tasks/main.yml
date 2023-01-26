@@ -1,5 +1,5 @@
 ---
-- name: Create /data/postgresql
+- name: Create /data/postgres
   ansible.builtin.file:
     path: "{{ postgres_volume }}"
     state: directory
@@ -7,6 +7,33 @@
     group: root
     mode: 0755
   when: inventory_hostname == groups['nfs_servers'][0]
+
+- name: Create directory /data/postgres-init
+  ansible.builtin.file:
+    path: /data/postgres-init
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+  when: inventory_hostname == groups['swarm_managers'][0]
+
+# Sending sql init files
+- name: Copy keycloak.sql to /data/postgres-init using template
+  ansible.builtin.template:
+    src: keycloak.sql.j2
+    dest: /data/postgres-init/keycloak.sql
+    owner: root
+    group: root
+    mode: 0644
+  when: inventory_hostname == groups['swarm_managers'][0]
+- name: Copy nextcloud.sql to /data/postgres-init using template
+  ansible.builtin.template:
+    src: nextcloud.sql.j2
+    dest: /data/postgres-init/nextcloud.sql
+    owner: root
+    group: root
+    mode: 0644
+  when: inventory_hostname == groups['swarm_managers'][0]
 
 - name: Pull postgres image
   community.docker.docker_image:
@@ -32,24 +59,6 @@
     push: true
   when: inventory_hostname == groups['swarm_managers'][0]
 
-- name: Create directory /data/postgres-init
-  ansible.builtin.file:
-    path: /data/postgres-init
-    state: directory
-    owner: root
-    group: root
-    mode: 0755
-  when: inventory_hostname == groups['swarm_managers'][0]
-
-- name: Copy init.sql to /data/postgres-init using template
-  ansible.builtin.template:
-    src: init.sql.j2
-    dest: /data/postgres-init/init.sql
-    owner: root
-    group: root
-    mode: 0644
-  when: inventory_hostname == groups['swarm_managers'][0]
-
 - name: Start postgres on swarm
   community.docker.docker_swarm_service:
     name: "postgres"
@@ -58,7 +67,7 @@
       - source: "{{ postgres_volume }}"
         target: "/var/lib/postgresql/data"
       - source: "/data/postgres-init"
-        target: "/docker-entrypoint-initdb.d/"
+        target: "/docker-entrypoint-initdb.d"
     publish:
       - published_port: "{{ postgres_port }}"
         target_port: "5432"
