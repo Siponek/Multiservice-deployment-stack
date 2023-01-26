@@ -6,8 +6,8 @@
 - [x] Docker swarm
 - [x] Docker registry
 - [ ] Docker registry cache
-- [ ] PostgreSQL
-- [ ] SSO - Keycloak
+- [x] PostgreSQL
+- [x] SSO - Keycloak
 - [ ] Service - NextCloud
 - [ ] External gatewat - Traefik
 - [ ] Monitoring & Logging
@@ -16,4 +16,4 @@
   - [ ] Log storage server
   - [ ] Dashboarding
 
-![13% done](https://geps.dev/progress/13)
+![47% done](https://geps.dev/progress/13)
