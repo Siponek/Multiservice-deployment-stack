@@ -1,1 +1,86 @@
 ---
+- name: Pull nextcloud image
+  community.docker.docker_image:
+    name: "nextcloud:23.0-apache"
+    repository: "{{ docker_registry_url }}/nextcloud:23.0-apache"
+    source: pull
+  when: inventory_hostname == groups['swarm_managers'][0]
+
+- name: Wait for nextcloud image
+  community.docker.docker_image_info:
+    name: "{{ docker_registry_url }}/nextcloud:23.0-apache"
+  register: nextcloud_image
+  until: nextcloud_image.images | length > 0
+  retries: 10
+  delay: 5
+  when: inventory_hostname == groups['swarm_managers'][0]
+
+- name: Push nextcloud to registry
+  community.docker.docker_image:
+    name: "{{ docker_registry_url }}/nextcloud:23.0-apache"
+    repository: "{{ docker_registry_url }}/nextcloud:23.0-apache"
+    source: pull
+    push: true
+    debug: true
+  when: inventory_hostname == groups['swarm_managers'][0]
+
+- name: Create /data/nextcloud
+  ansible.builtin.file:
+    path: "{{ nextcloud_data_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+  when: inventory_hostname == groups['swarm_managers'][0]
+
+# - name: Create /data/nextcloud/config
+#   ansible.builtin.file:
+#     path: "{{ nextcloud_data_dir }}/config"
+#     state: directory
+#     owner: www-data
+#     group: www-data
+#     mode: 0774
+#   when: inventory_hostname == groups['swarm_managers'][0]
+
+# - name: Place autoconfig.php inside the /data/nextcloud/config directory
+#   ansible.builtin.template:
+#     src: autoconfig.php.j2
+#     dest: /data/nextcloud/config/autoconfig.php
+#     owner: www-data
+#     group: www-data
+#     mode: 0774
+#   when: inventory_hostname == groups['swarm_managers'][0]
+
+- name: Start nextcloud
+  community.docker.docker_swarm_service:
+    name: "nextcloud"
+    image: "{{ docker_registry_url }}/nextcloud:23.0-apache"
+    mounts:
+      - source: "{{ nextcloud_data_dir }}"
+        target: "/var/www/html"
+      # - source: "{{ nextcloud_data_dir }}/config/autoconfig.php"
+      #   target: "/var/www/html/config/autoconfig.php"
+    # publish:
+    #   - published_port: 80
+    #     target_port: 80
+    networks:
+      - host
+    env:
+      POSTGRES_DB: "nextcloud"
+      POSTGRES_USER: "{{ nextcloud_username }}"
+      POSTGRES_PASSWORD: "{{ nextcloud_password }}"
+      POSTGRES_HOST: "{{ postgres_host }}"
+      NEXTCLOUD_ADMIN_USER: "{{ nextcloud_username }}"
+      NEXTCLOUD_ADMIN_PASSWORD: "{{ nextcloud_password }}"
+    restart_config:
+      condition: on-failure
+  when: inventory_hostname == groups['swarm_managers'][0]
+
+- name: Place autoconfig.php inside the /data/nextcloud/config directory
+  ansible.builtin.template:
+    src: entrypoint.sh.j2
+    dest: /data/entrypoint.sh
+    owner: root
+    group: root
+    mode: 0774
+  when: inventory_hostname == groups['swarm_managers'][0]

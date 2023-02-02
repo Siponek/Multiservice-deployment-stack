@@ -1,4 +1,5 @@
 ---
 postgres_volume: /data/postgres
 postgres_port: 5432
+postgres_host: 192.168.50.10
 postgres_username: postgres
