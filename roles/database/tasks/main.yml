@@ -82,5 +82,5 @@
 - name: Wait for postgres to start on port {{ postgres_port }}
   ansible.builtin.wait_for:
     port: "{{ postgres_port }}"
-    timeout: 60
+    timeout: 120
   when: inventory_hostname == groups['swarm_managers'][0]
