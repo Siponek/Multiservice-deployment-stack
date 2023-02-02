@@ -33,23 +33,19 @@
     mode: 0755
   when: inventory_hostname == groups['swarm_managers'][0]
 
-# - name: Create /data/nextcloud/config
-#   ansible.builtin.file:
-#     path: "{{ nextcloud_data_dir }}/config"
-#     state: directory
-#     owner: www-data
-#     group: www-data
-#     mode: 0774
-#   when: inventory_hostname == groups['swarm_managers'][0]
+- name: Place autoconfig.php inside the /data/nextcloud directory
+  ansible.builtin.template:
+    src: autoconfig.php.j2
+    dest: /data/nextcloud/autoconfig.php
+    owner: www-data
+    group: www-data
+    mode: 0664
+  when: inventory_hostname == groups['swarm_managers'][0]
 
-# - name: Place autoconfig.php inside the /data/nextcloud/config directory
-#   ansible.builtin.template:
-#     src: autoconfig.php.j2
-#     dest: /data/nextcloud/config/autoconfig.php
-#     owner: www-data
-#     group: www-data
-#     mode: 0774
-#   when: inventory_hostname == groups['swarm_managers'][0]
+- name: Wait 5 seconds
+  ansible.builtin.wait_for:
+    timeout: 5
+  when: inventory_hostname == groups['swarm_managers'][0]
 
 - name: Start nextcloud
   community.docker.docker_swarm_service:
@@ -58,11 +54,10 @@
     mounts:
       - source: "{{ nextcloud_data_dir }}"
         target: "/var/www/html"
-      # - source: "{{ nextcloud_data_dir }}/config/autoconfig.php"
-      #   target: "/var/www/html/config/autoconfig.php"
-    # publish:
-    #   - published_port: 80
-    #     target_port: 80
+    publish:
+      - mode: host
+        published_port: 80
+        target_port: 80
     networks:
       - host
     env:
@@ -72,15 +67,7 @@
       POSTGRES_HOST: "{{ postgres_host }}"
       NEXTCLOUD_ADMIN_USER: "{{ nextcloud_username }}"
       NEXTCLOUD_ADMIN_PASSWORD: "{{ nextcloud_password }}"
+      NEXTCLOUD_TRUSTED_DOMAINS: "192.168.50.10 192.168.50.20"
     restart_config:
       condition: on-failure
-  when: inventory_hostname == groups['swarm_managers'][0]
-
-- name: Place autoconfig.php inside the /data/nextcloud/config directory
-  ansible.builtin.template:
-    src: entrypoint.sh.j2
-    dest: /data/entrypoint.sh
-    owner: root
-    group: root
-    mode: 0774
   when: inventory_hostname == groups['swarm_managers'][0]
