@@ -33,20 +33,6 @@
     mode: 0755
   when: inventory_hostname == groups['swarm_managers'][0]
 
-- name: Place autoconfig.php inside the /data/nextcloud directory
-  ansible.builtin.template:
-    src: autoconfig.php.j2
-    dest: /data/nextcloud/autoconfig.php
-    owner: www-data
-    group: www-data
-    mode: 0664
-  when: inventory_hostname == groups['swarm_managers'][0]
-
-- name: Wait 5 seconds
-  ansible.builtin.wait_for:
-    timeout: 5
-  when: inventory_hostname == groups['swarm_managers'][0]
-
 - name: Start nextcloud
   community.docker.docker_swarm_service:
     name: "nextcloud"
