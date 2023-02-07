@@ -9,15 +9,4 @@ $AUTOCONFIG = array(
   "dbtableprefix" => "oc_",
   "adminlogin"    => "{{ nextcloud_username }}",
   "adminpass"     => "{{ nextcloud_password }}",
-
-  "allow_user_to_change_display_name" => "false",
-  "lost_password_link" => "disabled"
-  "oidc_login_disable_registration" => "false"
-  "oidc_login_provider_url" => "http://localhost:8080/realms/vcc"
-  "oidc_login_client_id" => "nextcloud"
-  "oidc_login_client_secret" => "{{ keycloak_password }}"
-  "oidc_login_end_session_redirect" => "true"
-  "oidc_login_logout_url" => "http://localhost/apps/oidc_login/oidc"
-  "oidc_login_auto_redirect" => "true"
-  "oidc_login_redir_fallback" => "true"
 );
