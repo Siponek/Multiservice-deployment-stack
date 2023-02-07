@@ -13,6 +13,14 @@
     mode: 0755
   when: inventory_hostname == groups['nfs_servers'][0]
 
+- name: Create /etc/docker
+  ansible.builtin.file:
+    path: /etc/docker
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+
 # Setting deamon to accept insecure connections and use the registry as a mirror
 - name: Set deamon.json
   ansible.builtin.copy:
