@@ -79,15 +79,9 @@
     containers: true
   register: result
 
-- name: Print info on docker host
-  ansible.builtin.debug:
-    # print containers.Names[0] only when containers.command == "/entrypoint.sh apache2-foreground" using jinja2 filtering
-    msg: "{% for soos in result.containers if soos.Command=='/entrypoint.sh apache2-foreground' %} {{ soos.Names[0][1:] }} {% endfor %}"
-  register: sasburra
-
 - name: DO the thing
   community.docker.docker_container_exec:
-    container: "{% for soos in result.containers if soos.Command=='/entrypoint.sh apache2-foreground' %}{{ soos.Names[0][1:] }}{% endfor %}"
+    container: "{% for specific in result.containers if specific.Command=='/entrypoint.sh apache2-foreground' %}{{ specific.Names[0][1:] }}{% endfor %}"
     command: php occ app:install oidc_login
     user: www-data
   when: inventory_hostname == groups['swarm_managers'][0]
