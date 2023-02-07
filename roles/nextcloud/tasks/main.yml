@@ -63,7 +63,6 @@
       NEXTCLOUD_ADMIN_USER: "{{ nextcloud_username }}"
       NEXTCLOUD_ADMIN_PASSWORD: "{{ nextcloud_password }}"
       NEXTCLOUD_TRUSTED_DOMAINS: "192.168.50.10 192.168.50.20"
-      NEXTCLOUD_CUSTOM_APPS: "oidc_login"
     replicas: 2
     restart_config:
       condition: any
@@ -72,16 +71,47 @@
 - name: Wait for nextcloud to start
   ansible.builtin.wait_for:
     port: "80"
-    timeout: 120
+    timeout: 300
+
+# - name: Wait for nextcloud initialization
+#   community.docker.docker_container_exec:
+#     container: "{% for specific in result.containers if specific.Command=='/entrypoint.sh apache2-foreground' %}{{ specific.Names[0][1:] }}{% endfor %}"
+#     command: php occ status --output json_pretty
+#   register: nextcloud
+#   until: nextcloud.containers[0].State.Status == 'installed'
+#   retries: 10
+#   delay: 5
+#   when: inventory_hostname == groups['swarm_managers'][0]
 
 - name: Get info on docker host
   community.docker.docker_host_info:
     containers: true
   register: result
 
-- name: DO the thing
+- name: Install OpenID Connect Login
   community.docker.docker_container_exec:
     container: "{% for specific in result.containers if specific.Command=='/entrypoint.sh apache2-foreground' %}{{ specific.Names[0][1:] }}{% endfor %}"
     command: php occ app:install oidc_login
+    user: www-data
+  when: inventory_hostname == groups['swarm_managers'][0]
+
+- name: Setup OpenID Connect Login settings
+  community.docker.docker_container_exec:
+    container: "{% for specific in result.containers if specific.Command=='/entrypoint.sh apache2-foreground' %}{{ specific.Names[0][1:] }}{% endfor %}"
+    command: >
+      php occ config:system:set --value="false" --type=boolean -- allow_user_to_change_display_name
+      php occ config:system:set --value="disabled" --type=string -- lost_password_link
+      php occ config:system:set --value="false" --type=boolean -- oidc_login_disable_registration
+
+      php occ config:system:set --value="{{ OIDC_PROVIDER_URL }}" --type=string -- oidc_login_provider_url
+      php occ config:system:set --value="{{ OIDC_CLIENT_ID }}" --type=string -- oidc_login_client_id
+      php occ config:system:set --value="{{ OIDC_CLIENT_SECRET }}" --type=string -- oidc_login_client_secret
+      php occ config:system:set --value="true" --type=boolean -- oidc_login_end_session_redirect
+      php occ config:system:set --value="{{ OIDC_LOGOUT_URL }}" --type=string -- oidc_login_logout_url
+      php occ config:system:set --value="true" --type=boolean -- oidc_login_auto_redirect
+      php occ config:system:set --value="true" --type=boolean -- oidc_login_redir_fallback
+
+      php occ config:system:set --value=preferred_username --type=string -- oidc_login_attributes id
+      php occ config:system:set --value=email --type=string -- oidc_login_attributes mail
     user: www-data
   when: inventory_hostname == groups['swarm_managers'][0]
