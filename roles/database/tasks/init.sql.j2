@@ -1,0 +1,7 @@
+-- Create keycloak db
+CREATE USER "{{ keycloak_username }}" WITH PASSWORD '{{ keycloak_password }}';
+CREATE DATABASE "keycloak" WITH OWNER = "{{ keycloak_username }}";
+
+-- Create nextcloud db
+CREATE USER "{{ nextcloud_username }}" WITH PASSWORD '{{ nextcloud_password }}';
+CREATE DATABASE "nextcloud" WITH OWNER = "{{ nextcloud_username }}";

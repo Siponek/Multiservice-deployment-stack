@@ -17,19 +17,10 @@
     mode: 0755
   when: inventory_hostname == groups['swarm_managers'][0]
 
-# Sending sql init files
-- name: Copy keycloak.sql to /data/postgres-init using template
+- name: Copy init.sql to /data/postgres-init using template
   ansible.builtin.template:
-    src: keycloak.sql.j2
-    dest: /data/postgres-init/keycloak.sql
-    owner: root
-    group: root
-    mode: 0644
-  when: inventory_hostname == groups['swarm_managers'][0]
-- name: Copy nextcloud.sql to /data/postgres-init using template
-  ansible.builtin.template:
-    src: nextcloud.sql.j2
-    dest: /data/postgres-init/nextcloud.sql
+    src: init.sql.j2
+    dest: /data/postgres-init/init.sql
     owner: root
     group: root
     mode: 0644
@@ -83,4 +74,3 @@
   ansible.builtin.wait_for:
     port: "{{ postgres_port }}"
     timeout: 120
-  # when: inventory_hostname == groups['swarm_managers'][0]d
