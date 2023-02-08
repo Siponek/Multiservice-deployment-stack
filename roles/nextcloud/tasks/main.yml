@@ -88,30 +88,19 @@
     containers: true
   register: result
 
-- name: Install OpenID Connect Login
-  community.docker.docker_container_exec:
-    container: "{% for specific in result.containers if specific.Command=='/entrypoint.sh apache2-foreground' %}{{ specific.Names[0][1:] }}{% endfor %}"
-    command: php occ app:install oidc_login
-    user: www-data
-  when: inventory_hostname == groups['swarm_managers'][0]
+- name: Set nextcloud container name
+  ansible.builtin.set_fact:
+    nc_container_name: "{% for specific in result.containers if 'nextcloud' in specific.Names[0] %}{{ specific.Names[0][1:] }}{% endfor %}"
 
-- name: Setup OpenID Connect Login settings
-  community.docker.docker_container_exec:
-    container: "{% for specific in result.containers if specific.Command=='/entrypoint.sh apache2-foreground' %}{{ specific.Names[0][1:] }}{% endfor %}"
-    command: >
-      php occ config:system:set --value="false" --type=boolean -- allow_user_to_change_display_name
-      php occ config:system:set --value="disabled" --type=string -- lost_password_link
-      php occ config:system:set --value="false" --type=boolean -- oidc_login_disable_registration
+- name: Set keycloak container name
+  ansible.builtin.set_fact:
+    kc_container_name: "{% for specific in result.containers if 'keycloak' in specific.Names[0] %}{{ specific.Names[0][1:] }}{% endfor %}"
 
-      php occ config:system:set --value="{{ OIDC_PROVIDER_URL }}" --type=string -- oidc_login_provider_url
-      php occ config:system:set --value="{{ OIDC_CLIENT_ID }}" --type=string -- oidc_login_client_id
-      php occ config:system:set --value="{{ OIDC_CLIENT_SECRET }}" --type=string -- oidc_login_client_secret
-      php occ config:system:set --value="true" --type=boolean -- oidc_login_end_session_redirect
-      php occ config:system:set --value="{{ OIDC_LOGOUT_URL }}" --type=string -- oidc_login_logout_url
-      php occ config:system:set --value="true" --type=boolean -- oidc_login_auto_redirect
-      php occ config:system:set --value="true" --type=boolean -- oidc_login_redir_fallback
-
-      php occ config:system:set --value=preferred_username --type=string -- oidc_login_attributes id
-      php occ config:system:set --value=email --type=string -- oidc_login_attributes mail
-    user: www-data
-  when: inventory_hostname == groups['swarm_managers'][0]
+- name: Launch script on keycloak machine
+  ansible.builtin.script: ./sus.sh
+  environment:
+    NC_CONTAINER_NAME: "{{ nc_container_name }}"
+    KC_CONTAINER_NAME: "{{ kc_container_name }}"
+    KEYCLOAK_USERNAME: "{{ keycloak_username }}"
+    KEYCLOAK_PASSWORD: "{{ keycloak_password }}"
+  when: kc_container_name != ''
