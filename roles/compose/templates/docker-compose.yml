@@ -1,0 +1,54 @@
+version: "3.8"
+networks:
+  skynet:
+    driver: overlay
+    ipam:
+      config:
+        - subnet: 192.168.69.0/24
+
+services:
+  postgres:
+    image: "{{ docker_registry_url }}/postgres:15.1"
+    volumes:
+      - "/data/postgres:/var/lib/postgresql"
+      - "/data/postgres-init:/docker-entrypoint-initdb.d"
+    ports:
+      - "5432:5432"
+    networks:
+      - "skynet"
+    restart: unless-stopped
+    environment:
+      - POSTGRES_PASSWORD={{ postgres_password }}
+      - PG_DATA=var/lib/postgresql/pgdata
+
+  keycloak:
+    image: "{{ docker_registry_url }}/keycloak:20.0.1"
+    volumes:
+      - "/data/keycloak/realm-export.json:/opt/keycloak/data/import/main-realm.json"
+        read_only: true
+    publish:
+      - "8080:8443"
+    networks:
+      - "skynet"
+    restart: unless-stopped
+    environment:
+      - KC_CONTAINER_NAME="keycloak"
+      - KEYCLOAK_ADMIN="{{ keycloak_username }}"
+      - KEYCLOAK_ADMIN_PASSWORD="{{ keycloak_password }}"
+      - KC_DB_URL="jdbc:postgresql://{{ ansible_host }}:5432/keycloak"
+      - KC_DB_USERNAME="{{ keycloak_username }}"
+      - KC_DB_PASSWORD="{{ keycloak_password }}"
+      - KC_DB="postgres"
+    build:
+      context: .
+      args: "start-dev --import-realm"
+
+  
+  # nextcloud:
+  #   networks:
+  #     - "skynet"
+  
+  # traefik:
+  #   networks:
+  #     - "skynet"
+  #     - "host"

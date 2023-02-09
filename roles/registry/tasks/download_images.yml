@@ -1,0 +1,101 @@
+---
+# traefik
+- name: Pull traefik image
+  community.docker.docker_image:
+    name: traefik:v2.9.6
+    repository: "{{ docker_registry_url }}/traefik:v2.9.6"
+    source: pull
+  when: inventory_hostname == groups['swarm_managers'][0]
+
+- name: Wait for traefik image
+  community.docker.docker_image_info:
+    name: "{{ docker_registry_url }}/traefik:v2.9.6"
+  register: traefik_image
+  until: traefik_image.images | length > 0
+  retries: 10
+  when: inventory_hostname == groups['swarm_managers'][0]
+
+- name: Push traefik to registry
+  community.docker.docker_image:
+    name: traefik:v2.9.6
+    repository: "{{ docker_registry_url }}/traefik:v2.9.6"
+    source: pull
+    push: true
+  when: inventory_hostname == groups['swarm_managers'][0]
+
+# posrgrtesds
+- name: Pull postgres image
+  community.docker.docker_image:
+    name: postgres:15.1
+    repository: "{{ docker_registry_url }}/postgres:15.1"
+    source: pull
+  when: inventory_hostname == groups['swarm_managers'][0]
+
+- name: Wait for postgres image
+  community.docker.docker_image_info:
+    name: "{{ docker_registry_url }}/postgres:15.1"
+  register: postgres_image
+  until: postgres_image.images | length > 0
+  retries: 10
+  delay: 5
+  when: inventory_hostname == groups['swarm_managers'][0]
+
+- name: Push postgres to registry
+  community.docker.docker_image:
+    name: postgres:15.1
+    repository: "{{ docker_registry_url }}/postgres:15.1"
+    source: pull
+    push: true
+  when: inventory_hostname == groups['swarm_managers'][0]
+
+# nextcloud
+- name: Pull nextcloud image
+  community.docker.docker_image:
+    name: "nextcloud:23.0-apache"
+    repository: "{{ docker_registry_url }}/nextcloud:23.0-apache"
+    source: pull
+  when: inventory_hostname == groups['swarm_managers'][0]
+
+- name: Wait for nextcloud image
+  community.docker.docker_image_info:
+    name: "{{ docker_registry_url }}/nextcloud:23.0-apache"
+  register: nextcloud_image
+  until: nextcloud_image.images | length > 0
+  retries: 10
+  delay: 5
+  when: inventory_hostname == groups['swarm_managers'][0]
+
+- name: Push nextcloud to registry
+  community.docker.docker_image:
+    name: "{{ docker_registry_url }}/nextcloud:23.0-apache"
+    repository: "{{ docker_registry_url }}/nextcloud:23.0-apache"
+    source: pull
+    push: true
+    debug: true
+  when: inventory_hostname == groups['swarm_managers'][0]
+
+# keycloak
+- name: Pull Keycloak image
+  community.docker.docker_image:
+    name: quay.io/keycloak/keycloak:20.0.1
+    repository: "{{ docker_registry_url }}/keycloak:20.0.1"
+    source: pull
+  when: inventory_hostname == groups['swarm_managers'][0]
+
+- name: Wait for keycloak image
+  community.docker.docker_image_info:
+    name: "{{ docker_registry_url }}/keycloak:20.0.1"
+  register: keycloak_image
+  until: keycloak_image.images | length > 0
+  retries: 10
+  delay: 5
+  when: inventory_hostname == groups['swarm_managers'][0]
+
+- name: Push keycloak to registry
+  community.docker.docker_image:
+    name: "{{ docker_registry_url }}/keycloak:20.0.1"
+    repository: "{{ docker_registry_url }}/keycloak:20.0.1"
+    source: pull
+    push: true
+    debug: true
+  when: inventory_hostname == groups['swarm_managers'][0]

@@ -68,7 +68,7 @@ setString oidc_login_client_id "nextcloud"
 setString oidc_login_client_secret "${OIDC_CLIENT_SECRET}"
 setBoolean oidc_login_end_session_redirect true
 setString oidc_login_logout_url "http://nextcloud/apps/oidc_login/oidc"
-setBoolean oidc_login_auto_redirect true
+setBoolean oidc_login_auto_redirect false
 setBoolean oidc_login_redir_fallback true
 
 runOCC config:system:set --value=preferred_username --type=string -- oidc_login_attributes id

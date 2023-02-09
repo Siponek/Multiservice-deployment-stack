@@ -3,14 +3,15 @@
   hosts: all
   become: true
   roles:
-    - update
-    - nfs
-    - geerlingguy.docker
+    # - update
+    # - nfs
+    # - geerlingguy.docker
     - docker_swarm
     - registry
     - database
-    - keycloak
-    - nextcloud
-    - monitoring
-    - logging
-    - dashboard
+    - compose
+    # - keycloak
+    # - nextcloud
+    # - monitoring
+    # - logging
+    # - dashboard

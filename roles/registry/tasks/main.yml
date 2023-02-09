@@ -63,3 +63,11 @@
     registry_url: "{{ docker_registry_url }}"
     username: "{{ registry_username }}"
     password: "{{ registry_password }}"
+
+- name: Install docker-compose
+  ansible.builtin.pip:
+    name: docker-compose
+    state: present
+
+- name: Launch download-images.yml
+  ansible.builtin.include_tasks: download_images.yml
