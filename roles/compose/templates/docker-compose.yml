@@ -13,17 +13,16 @@ services:
         mode: host
     # networks:
     #   - "skynet"
-    restart: always
+    restart: on-failure
     environment:
       POSTGRES_PASSWORD: "{{ postgres_password }}"
-      # PG_DATA: "var/lib/postgresql/pgdata"
 
   keycloak:
     image: "{{ docker_registry_url }}/keycloak:20.0.1"
     volumes:
       - "/data/keycloak/realm-export.json:/opt/keycloak/data/import/main-realm.json"
     ports:
-      - target: 8443
+      - target: 8080
         published: 8080
         protocol: tcp
         mode: host
@@ -34,7 +33,7 @@ services:
       KC_CONTAINER_NAME: "keycloak"
       KEYCLOAK_ADMIN: "{{ keycloak_username }}"
       KEYCLOAK_ADMIN_PASSWORD: "{{ keycloak_password }}"
-      KC_DB_URL: "jdbc:postgresql://{{ ansible_host }}:5432/keycloak"
+      KC_DB_URL: "jdbc:postgresql://postgres:5432/keycloak"
       KC_DB_USERNAME: "{{ keycloak_username }}"
       KC_DB_PASSWORD: "{{ keycloak_password }}"
       KC_DB: "postgres"
