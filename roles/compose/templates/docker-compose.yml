@@ -11,8 +11,8 @@ services:
         published: 5432
         protocol: tcp
         mode: host
-    # networks:
-    #   - "skynet"
+    networks:
+      - "skynet"
     restart: on-failure
     environment:
       POSTGRES_PASSWORD: "{{ postgres_password }}"
@@ -26,8 +26,8 @@ services:
         published: 8080
         protocol: tcp
         mode: host
-    # networks:
-    #   - "skynet"
+    networks:
+      - "skynet"
     restart: on-failure
     environment:
       KC_CONTAINER_NAME: "keycloak"
@@ -41,6 +41,6 @@ services:
       - start-dev
       - --import-realm
 
-# networks:
-#   skynet:
-#     driver: overlay
+networks:
+  skynet:
+    driver: overlay
