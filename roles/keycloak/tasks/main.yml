@@ -1,6 +1,4 @@
 ---
-
-
 - name: Create /data/keycloak
   ansible.builtin.file:
     path: "{{ keycloak_data_dir }}"
@@ -18,49 +16,3 @@
     group: root
     mode: 0644
   when: inventory_hostname == groups['swarm_managers'][0]
-
-- name: Start Keycloak
-  community.docker.docker_swarm_service:
-    name: "keycloak"
-    image: "{{ docker_registry_url }}/keycloak:20.0.1"
-    mounts:
-      - source: /data/keycloak/realm-export.json
-        target: /opt/keycloak/data/import/main-realm.json
-        readonly: true
-    publish:
-      - published_port: 8080
-        target_port: 8443
-    restart_config:
-      condition: on-failure
-    env:
-      KC_CONTAINER_NAME: "keycloak"
-      KEYCLOAK_ADMIN: "{{ keycloak_username }}"
-      KEYCLOAK_ADMIN_PASSWORD: "{{ keycloak_password }}"
-      KC_DB_URL: "jdbc:postgresql://{{ ansible_host }}:5432/keycloak"
-      KC_DB_USERNAME: "{{ keycloak_username }}"
-      KC_DB_PASSWORD: "{{ keycloak_password }}"
-      KC_DB: "postgres"
-    args: "start-dev --import-realm"
-  when: inventory_hostname == groups['swarm_managers'][0]
-
-- name: Get container info
-  community.docker.docker_host_info:
-    containers: true
-  register: res
-
-- name: Save keycloak container ip addr
-  ansible.builtin.set_fact:
-    keycloak_host: "{% for x in res.containers if 'keycloak' in x.Names[0] %}{{ ansible_host }}{% endfor %}"
-
-- name: Save keycloak_host on all nodes
-  ansible.builtin.set_fact:
-    keycloak_host: "{{ keycloak_host }}"
-  delegate_to: "{{ groups['swarm_managers'][0] }}"
-
-- name: print keycloak_host
-  ansible.builtin.debug:
-    msg: "{{ keycloak_host }}"
-
-# - name: Wait for 3 minutes
-#   ansible.builtin.pause:
-#     minutes: 3
