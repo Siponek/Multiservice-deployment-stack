@@ -4,14 +4,14 @@
   become: true
   roles:
     # - update
-    # - nfs
-    # - geerlingguy.docker
+    - nfs
+    - docker
     - docker_swarm
     - registry
     - database
-    - compose
-    # - keycloak
+    - keycloak
     # - nextcloud
     # - monitoring
     # - logging
     # - dashboard
+    - compose

@@ -3,6 +3,4 @@ collections:
   - name: community.docker
   - name: community.general
   - name: community.postgresql
-  # - name: community.kubernetes
-roles:
-  - name: geerlingguy.docker
+roles: {}

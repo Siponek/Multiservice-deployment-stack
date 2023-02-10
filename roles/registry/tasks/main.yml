@@ -15,7 +15,7 @@
 
 # Launch setup tasks for registry
 # - setup_registry.yml for registry
-# - setup_registry_cache.yml for registry cache
+# - setup_registry_cache.yml for registry cache (not working)
 - name: Setup
   ansible.builtin.include_tasks: setup_registry.yml
 
@@ -55,7 +55,7 @@
     host: "{{ docker_registry_ip }}"
     port: "{{ registry_port }}"
     state: started
-    timeout: 15
+    timeout: 120
     delay: 1
 
 - name: Login to registry

@@ -4,7 +4,3 @@
     update_cache: true
     upgrade: dist
 
-- name: Install jq
-  ansible.builtin.apt:
-    name: jq
-    state: present

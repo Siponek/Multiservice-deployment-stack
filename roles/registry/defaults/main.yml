@@ -1,5 +1,6 @@
 ---
 registry_image: distribution/distribution:2.8.1
 registry_port: 5000
-registry_volume: /registry
-registry_htpasswd_path: /registry/htpasswd
+registry_volume: /data/docker-registry
+registry_cache_volume: /data/docker-registry-cache
+registry_htpasswd_path: /data/auth/htpasswd
