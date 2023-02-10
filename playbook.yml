@@ -10,8 +10,8 @@
     - registry
     - database
     - keycloak
-    # - nextcloud
+    - nextcloud
+    - compose
     # - monitoring
     # - logging
     # - dashboard
-    - compose

@@ -4,47 +4,32 @@
 #
 # Nextcloud
 runOCC() {
-    docker exec -i -u www-data "$NC_CONTAINER_NAME" php occ "$@"
+    php occ "$@"
 }
 setBoolean() { runOCC config:system:set --value="$2" --type=boolean -- "$1"; }
 setInteger() { runOCC config:system:set --value="$2" --type=integer -- "$1"; }
 setString() { runOCC config:system:set --value="$2" --type=string -- "$1"; }
 # Keycloak
-runKeycloak() {
-    docker exec -i "$KC_CONTAINER_NAME" "$@"
-}
 keycloakAdminToken() {
-    runKeycloak curl -X POST "http://localhost:8080/realms/master/protocol/openid-connect/token" \
+    curl -X POST "http://keycloak:8080/realms/master/protocol/openid-connect/token" \
         --data-urlencode "username=${KEYCLOAK_USERNAME}" \
         --data-urlencode "password=${KEYCLOAK_PASSWORD}" \
         --data-urlencode 'grant_type=password' \
         --data-urlencode 'client_id=admin-cli'
 }
 keycloakCurl() {
-    runKeycloak curl \
+    curl \
         --header "Authorization: Bearer $(keycloakAdminToken | jq -r '.access_token')" \
         "$@"
 }
 
-# Wait until Nextcloud container appears
-until docker inspect "$NC_CONTAINER_NAME"; do
-    sleep 1
-done
-echo 'Nextcloud container found'
-
-# Wait until Keycloak container appears
-until docker inspect "$KC_CONTAINER_NAME"; do
-    sleep 1
-done
-echo 'Keycloak container found'
-
 # Wait until Keycloak is alive
-until runKeycloak curl -sSf http://127.0.0.1:8080; do
+until curl -sSf http://keycloak:8080; do
     sleep 1
 done
 echo 'Keycloak alive'
 
-OIDC_CLIENT_SECRET=$(keycloakCurl http://127.0.0.1:8080/admin/realms/vcc/clients/nextcloud | jq -r '.secret')
+OIDC_CLIENT_SECRET=$(keycloakCurl http://keycloak:8080/admin/realms/vcc/clients/nextcloud | jq -r '.secret')
 
 # print the OIDC_CLIENT_SECRET
 echo "OIDC_CLIENT_SECRET=${OIDC_CLIENT_SECRET}"
