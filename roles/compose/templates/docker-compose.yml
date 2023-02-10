@@ -2,44 +2,69 @@ version: '3.3'
 
 services:
   postgres:
-    image: "{{ docker_registry_url }}/postgres:15.1"
+    image: '{{ docker_registry_url }}/postgres:15.1'
     volumes:
-      - "/data/postgres:/var/lib/postgresql/data"
-      - "/data/postgres-init:/docker-entrypoint-initdb.d"
+      - '/data/postgres:/var/lib/postgresql/data'
+      - '/data/postgres-init:/docker-entrypoint-initdb.d'
     ports:
-      - target: 5432
-        published: 5432
-        protocol: tcp
-        mode: host
+     - 5432:5432
     networks:
-      - "skynet"
+      - 'skynet'
     restart: on-failure
     environment:
-      POSTGRES_PASSWORD: "{{ postgres_password }}"
+      POSTGRES_PASSWORD: '{{ postgres_password }}'
 
   keycloak:
-    image: "{{ docker_registry_url }}/keycloak:20.0.1"
+    image: '{{ docker_registry_url }}/keycloak:20.0.1'
+    depends_on:
+      - postgres
     volumes:
-      - "/data/keycloak/realm-export.json:/opt/keycloak/data/import/main-realm.json"
+      - '/data/keycloak/realm-export.json:/opt/keycloak/data/import/main-realm.json'
     ports:
       - target: 8080
         published: 8080
         protocol: tcp
         mode: host
     networks:
-      - "skynet"
+      - 'skynet'
     restart: on-failure
     environment:
-      KC_CONTAINER_NAME: "keycloak"
-      KEYCLOAK_ADMIN: "{{ keycloak_username }}"
-      KEYCLOAK_ADMIN_PASSWORD: "{{ keycloak_password }}"
-      KC_DB_URL: "jdbc:postgresql://postgres:5432/keycloak"
-      KC_DB_USERNAME: "{{ keycloak_username }}"
-      KC_DB_PASSWORD: "{{ keycloak_password }}"
-      KC_DB: "postgres"
+      KC_CONTAINER_NAME: 'keycloak'
+      KEYCLOAK_ADMIN: '{{ keycloak_username }}'
+      KEYCLOAK_ADMIN_PASSWORD: '{{ keycloak_password }}'
+      KC_DB_URL: 'jdbc:postgresql://postgres:5432/keycloak'
+      KC_DB_USERNAME: '{{ keycloak_username }}'
+      KC_DB_PASSWORD: '{{ keycloak_password }}'
+      KC_DB: 'postgres'
     command:
       - start-dev
       - --import-realm
+
+  nextcloud:
+    image: '{{ docker_registry_url }}/nextcloud:23.0-apache'
+    depends_on:
+      - postgres
+    volumes:
+      - '{{ nextcloud_data_dir }}:/var/www/html'
+    ports:
+      - target: 80
+        published: 80
+        protocol: tcp
+        mode: host
+    networks:
+      - 'skynet'
+    environment:
+      POSTGRES_DB: 'nextcloud'
+      POSTGRES_USER: '{{ nextcloud_username }}'
+      POSTGRES_PASSWORD: '{{ nextcloud_password }}'
+      POSTGRES_HOST: 'postgres'
+      NEXTCLOUD_ADMIN_USER: '{{ nextcloud_username }}'
+      NEXTCLOUD_ADMIN_PASSWORD: '{{ nextcloud_password }}'
+      NEXTCLOUD_TRUSTED_DOMAINS: '192.168.50.10 192.168.50.20'
+      KEYCLOAK_USERNAME: '{{ keycloak_username }}' # used for integrator
+      KEYCLOAK_PASSWORD: '{{ keycloak_password }}' # used for integrator
+    command:
+      - '/var/www/html/nextcloud-integrator.sh'
 
 networks:
   skynet:
