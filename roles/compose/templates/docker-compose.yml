@@ -60,11 +60,9 @@ services:
       POSTGRES_HOST: 'postgres'
       NEXTCLOUD_ADMIN_USER: '{{ nextcloud_username }}'
       NEXTCLOUD_ADMIN_PASSWORD: '{{ nextcloud_password }}'
-      NEXTCLOUD_TRUSTED_DOMAINS: '192.168.50.10 192.168.50.20'
+      NEXTCLOUD_TRUSTED_DOMAINS: '192.168.50.*'
       KEYCLOAK_USERNAME: '{{ keycloak_username }}' # used for integrator
       KEYCLOAK_PASSWORD: '{{ keycloak_password }}' # used for integrator
-    command:
-      - '/var/www/html/nextcloud-integrator.sh'
 
 networks:
   skynet:
