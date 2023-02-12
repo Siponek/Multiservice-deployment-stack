@@ -63,6 +63,8 @@ services:
       NEXTCLOUD_TRUSTED_DOMAINS: '192.168.50.*'
       KEYCLOAK_USERNAME: '{{ keycloak_username }}' # used for integrator
       KEYCLOAK_PASSWORD: '{{ keycloak_password }}' # used for integrator
+    user: 'www-data'
+    command: sh -c '/var/www/html/nextcloud-integrator.sh'
 
 networks:
   skynet:

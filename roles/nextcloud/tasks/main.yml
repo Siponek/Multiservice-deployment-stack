@@ -14,7 +14,7 @@
     dest: /data/nextcloud/autoconfig.php
     owner: www-data
     group: www-data
-    mode: 0664
+    mode: 0774
   when: inventory_hostname == groups['swarm_managers'][0]
 
 - name: Place scripts/nextcloud-integrator.sh inside the /data/nextcloud directory

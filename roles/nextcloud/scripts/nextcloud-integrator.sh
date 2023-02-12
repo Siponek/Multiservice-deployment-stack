@@ -1,5 +1,7 @@
 #!/bin/sh
 #
+# Install jq
+apt update && apt install jq -y
 # Helper functions
 #
 # Nextcloud
@@ -31,11 +33,9 @@ echo 'Keycloak alive'
 
 OIDC_CLIENT_SECRET=$(keycloakCurl http://keycloak:8080/admin/realms/vcc/clients/nextcloud | jq -r '.secret')
 
-# print the OIDC_CLIENT_SECRET
-echo "OIDC_CLIENT_SECRET=${OIDC_CLIENT_SECRET}"
-
 # Wait until Nextcloud install is complete
 until runOCC status --output json_pretty | grep 'installed' | grep -q 'true'; do
+    echo 'Nextcloud not ready yet'
     sleep 1
 done
 echo 'Nextcloud ready'
