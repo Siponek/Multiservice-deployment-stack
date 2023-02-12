@@ -1,4 +1,9 @@
 ---
+- name: Install jq
+  ansible.builtin.package:
+    name: jq
+    state: present
+
 - name: Copy template
   ansible.builtin.template:
     src: templates/docker-compose.yml
@@ -8,7 +13,7 @@
     mode: 0644
   when: inventory_hostname == groups['swarm_managers'][0]
 
-- name: install jsondiff
+- name: Install jsondiff
   ansible.builtin.pip:
     name: jsondiff
     state: present
