@@ -19,6 +19,12 @@
     state: present
   when: inventory_hostname == groups['swarm_managers'][0]
 
+- name: Create docker network
+  community.docker.docker_network:
+    name: skynet
+    driver: overlay
+  when: inventory_hostname == groups['swarm_managers'][0]
+
 - name: Deploy stack from a compose file
   community.docker.docker_stack:
     state: present
