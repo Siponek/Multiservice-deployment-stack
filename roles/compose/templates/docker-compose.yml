@@ -36,7 +36,7 @@ services:
         - traefik.enable=true
         - traefik.docker.network=vcc_skynet
         - traefik.protocol=https
-        - traefik.http.routers.keycloak_route.rule=Host(`cloud.local`)
+        - traefik.http.routers.keycloak_route.rule=Host(`auth.local`)
         - traefik.http.routers.keycloak_route.entrypoints=websecure
         - traefik.http.routers.keycloak_route.service=keycloak_service
         - traefik.http.routers.keycloak_route.tls=true
