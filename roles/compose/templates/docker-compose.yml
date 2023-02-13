@@ -36,9 +36,8 @@ services:
         - traefik.enable=true
         - traefik.docker.network=vcc_skynet
         - traefik.protocol=https
-        - traefik.http.routers.keycloak_route.rule=Host(`cloud.local`)'
+        - traefik.http.routers.keycloak_route.rule=Host(`cloud.local`)
         - traefik.http.routers.keycloak_route.entrypoints=websecure
-        - traefik.http.routers.keycloak_route.rule=Host(`pmy.local`)
         - traefik.http.routers.keycloak_route.service=keycloak_service
         - traefik.http.routers.keycloak_route.tls=true
         - traefik.http.services.keycloak_service.loadbalancer.server.port=80
@@ -75,7 +74,6 @@ services:
         - traefik.protocol=https
         - traefik.http.routers.nxcloud_route.rule=Host(`cloud.local`)
         - traefik.http.routers.nxcloud_route.entrypoints=websecure
-        - traefik.http.routers.nxcloud_route.rule=Host(`pmy.local`)
         - traefik.http.routers.nxcloud_route.service=nextcloud_service
         - traefik.http.routers.nxcloud_route.tls=true
         - traefik.http.services.nextcloud_service.loadbalancer.server.port=80
