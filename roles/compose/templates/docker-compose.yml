@@ -3,6 +3,7 @@ version: '3.3'
 services:
   postgres:
     image: '{{ docker_registry_url }}/postgres:15.1'
+    container_name: "postgres"
     volumes:
       - '/data/postgres:/var/lib/postgresql/data'
       - '/data/postgres-init:/docker-entrypoint-initdb.d'
@@ -16,15 +17,11 @@ services:
 
   keycloak:
     image: '{{ docker_registry_url }}/keycloak:20.0.1'
+    container_name: "keycloak"
     depends_on:
       - postgres
     volumes:
       - '/data/keycloak/realm-export.json:/opt/keycloak/data/import/main-realm.json'
-    ports:
-      - target: 8080
-        published: 8080
-        protocol: tcp
-        mode: host
     networks:
       - 'skynet'
     restart: on-failure
@@ -36,21 +33,24 @@ services:
       KC_DB_USERNAME: '{{ keycloak_username }}'
       KC_DB_PASSWORD: '{{ keycloak_password }}'
       KC_DB: 'postgres'
+    deploy:
+      labels:
+        - "traefik.enable=true"
+        - "traefik.docker.network=skynet"
+        - "traefik.protocol=https"
+        - "traefik.http.routers.authlocaldomain.rule=Host(`auth.local`)"
+        - "traefik.http.routers.authlocaldomain.loadbalancer.server.port=8080"
     command:
       - start-dev
       - --import-realm
 
   nextcloud:
     image: '{{ docker_registry_url }}/nextcloud:23.0-apache'
+    container_name: "nextcloud"
     depends_on:
       - postgres
     volumes:
       - '{{ nextcloud_data_dir }}:/var/www/html'
-    ports:
-      - target: 80
-        published: 80
-        protocol: tcp
-        mode: host
     networks:
       - 'skynet'
     environment:
@@ -63,8 +63,61 @@ services:
       NEXTCLOUD_TRUSTED_DOMAINS: '192.168.50.*'
       KEYCLOAK_USERNAME: '{{ keycloak_username }}' # used for integrator
       KEYCLOAK_PASSWORD: '{{ keycloak_password }}' # used for integrator
+    deploy:
+      labels:
+        - "traefik.enable=true"
+        - "traefik.docker.network=skynet"
+        - "traefik.protocol=https"
+        - "traefik.http.routers.cloudlocaldomain.rule=Host(`cloud.local`)"
+        - "traefik.http.routers.cloudlocaldomain.loadbalancer.server.port=80"
     user: 'www-data'
     command: sh -c '/var/www/html/nextcloud-integrator.sh'
+
+  traefik:
+    image: '{{ docker_registry_url }}/traefik:v2.9.6'
+    container_name: "traefik"
+    ports:
+      - target: 80
+        published: 80
+        mode: host
+      - target: 443
+        published: 443
+        mode: host
+      - "8080:8080"
+    volumes:
+      - /data/certs:/etc/ssl/traefik
+      - /data/traefik:/etc/traefik/dynamic
+      - /data/:/logs
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    command:
+      # enable Web UI
+      - --api.insecure=true
+      # set provider (Docker Swarm)
+      - --providers.docker.network=skynet
+      - --providers.docker.swarmMode=true
+      # traefik http entrypoint port
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
+      # redirect
+      - --entrypoints.web.http.redirections.entryPoint.to=websecure
+      # add x-forwaded-for
+      - --entrypoints.web.forwardedHeaders.insecure=true
+      # manually enable services exposed by traefik
+      - --providers.docker.exposedByDefault=false
+      # dynamic configuration files folder
+      - --providers.file.directory=/etc/traefik/dynamic
+      - --log.level=DEBUG
+      # log
+      - "--accesslog=true"
+      - "--accesslog.filePath=/logs/access.log"
+    networks:
+      - skynet
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
 
 networks:
   skynet:
