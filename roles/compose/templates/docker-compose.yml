@@ -81,7 +81,7 @@ services:
         - traefik.http.services.nextcloud_service.loadbalancer.sticky=true
         - traefik.http.services.nextcloud_service.loadbalancer.sticky.cookie.name=StickyCookie
     user: 'www-data'
-    command: sh -c '/var/www/html/nextcloud-integrator.sh'
+    command: sh -c '/var/www/html/nextcloud-integrator.sh && apache2-foreground'
 
   traefik:
     image: '{{ docker_registry_url }}/traefik:v2.9.6'
