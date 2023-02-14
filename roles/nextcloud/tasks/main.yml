@@ -1,4 +1,9 @@
 ---
+- name: Install jq
+  ansible.builtin.package:
+    name: jq
+    state: present
+
 - name: Create /data/nextcloud
   ansible.builtin.file:
     path: "{{ nextcloud_data_dir }}"
