@@ -1,4 +1,13 @@
 {
+	"browserSecurityHeaders": {
+		"contentSecurityPolicyReportOnly": "",
+		"xContentTypeOptions": "",
+		"xRobotsTag": "",
+		"xFrameOptions": "",
+		"contentSecurityPolicy": "",
+		"xXSSProtection": "",
+		"strictTransportSecurity": ""
+	},
 	"realm": "vcc",
 	"enabled": true,
 	"users": [
