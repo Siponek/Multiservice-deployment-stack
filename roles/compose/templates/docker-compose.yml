@@ -54,6 +54,7 @@ services:
 
   nextcloud:
     image: '{{ docker_registry_url }}/nextcloud:23.0-apache'
+    entrypoint: sh -c 'apt update && apt install jq grep -y && /var/www/html/nextcloud-integrator.sh'
     container_name: nextcloud
     depends_on:
       - postgres
@@ -68,7 +69,7 @@ services:
       POSTGRES_HOST: 'postgres'
       NEXTCLOUD_ADMIN_USER: '{{ nextcloud_username }}'
       NEXTCLOUD_ADMIN_PASSWORD: '{{ nextcloud_password }}'
-      NEXTCLOUD_TRUSTED_DOMAINS: '10.0.0.*'
+      NEXTCLOUD_TRUSTED_DOMAINS: 'cloud.local'
       KEYCLOAK_USERNAME: '{{ keycloak_username }}' # used for integrator
       KEYCLOAK_PASSWORD: '{{ keycloak_password }}' # used for integrator
     deploy:
@@ -88,8 +89,6 @@ services:
         # - traefik.http.services.nextcloud_service.loadbalancer.sticky.cookie.name=StickyCookie
         # Define the port inside of the Docker service to use
         - traefik.http.services.nextcloud-public.loadbalancer.server.port=80
-    user: 'www-data'
-    command: sh -c '/var/www/html/nextcloud-integrator.sh && apache2-foreground'
 
   traefik:
     image: '{{ docker_registry_url }}/traefik:v2.9.6'
