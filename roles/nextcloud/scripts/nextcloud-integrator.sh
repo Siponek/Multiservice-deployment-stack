@@ -4,7 +4,7 @@
 #
 # Nextcloud
 runOCC() {
-    sudo -u www-data php occ "$@"
+    sudo -u www-data php -d memory_limit=512M occ "$@"
 }
 setBoolean() { runOCC config:system:set --value="$2" --type=boolean -- "$1"; }
 setInteger() { runOCC config:system:set --value="$2" --type=integer -- "$1"; }
@@ -30,9 +30,6 @@ done
 echo 'Keycloak alive'
 
 /entrypoint.sh apache2-foreground &
-
-# set PHP_MEMORY_LIMIT for user www-data using sudo
-sudo -u www-data php -r 'ini_set("memory_limit","512M");'
 
 OIDC_CLIENT_SECRET=$(keycloakCurl http://keycloak:8080/admin/realms/vcc/clients/nextcloud | jq -r '.secret')
 
