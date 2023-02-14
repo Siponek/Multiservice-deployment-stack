@@ -34,7 +34,7 @@ echo 'Keycloak alive'
 OIDC_CLIENT_SECRET=$(keycloakCurl http://keycloak:8080/admin/realms/vcc/clients/nextcloud | jq -r '.secret')
 
 # Wait until Nextcloud install is complete
-until runOCC status --output json_pretty | grep 'installed' | grep -q 'true'; do
+until runOCC status --output json_pretty | grep "installed" | grep -q "true"; do
     echo 'Nextcloud not ready yet'
     sleep 1
 done
@@ -59,4 +59,4 @@ setBoolean oidc_login_redir_fallback true
 runOCC config:system:set --value=preferred_username --type=string -- oidc_login_attributes id
 runOCC config:system:set --value=email --type=string -- oidc_login_attributes mail
 
-apache2-foreground
+tail -f /dev/null

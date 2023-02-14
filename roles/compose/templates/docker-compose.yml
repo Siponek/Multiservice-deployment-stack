@@ -54,12 +54,13 @@ services:
 
   nextcloud:
     image: '{{ docker_registry_url }}/nextcloud:23.0-apache'
-    entrypoint: sh -c 'apt update && apt install jq grep sudo -y && /var/www/html/nextcloud-integrator.sh'
+    entrypoint: sh -c 'apt update && apt install jq grep sudo -y && /var/www/nextcloud-integrator.sh'
     container_name: nextcloud
     depends_on:
       - postgres
     volumes:
-      - '{{ nextcloud_data_dir }}:/var/www/html'
+      - '{{ nextcloud_data_dir }}:/var/www'
+      - '{{ nextcloud_data_dir }}/html:/var/www/html'
     networks:
       - skynet
     environment:

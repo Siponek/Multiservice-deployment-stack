@@ -13,10 +13,19 @@
     mode: 0755
   when: inventory_hostname == groups['swarm_managers'][0]
 
+- name: Create /data/nextcloud/html
+  ansible.builtin.file:
+    path: "{{ nextcloud_data_dir }}/html"
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: 0755
+  when: inventory_hostname == groups['swarm_managers'][0]
+
 - name: Place autoconfig.php inside the /data/nextcloud directory
   ansible.builtin.template:
     src: autoconfig.php.j2
-    dest: /data/nextcloud/autoconfig.php
+    dest: /data/nextcloud/html/autoconfig.php
     owner: www-data
     group: www-data
     mode: 0774
