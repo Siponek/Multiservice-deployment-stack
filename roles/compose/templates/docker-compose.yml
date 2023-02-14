@@ -20,6 +20,8 @@ services:
       - postgres
     volumes:
       - '/data/keycloak/realm-export.json:/opt/keycloak/data/import/main-realm.json'
+    ports:
+      - 9000:8080
     networks:
       - skynet
     restart: on-failure
@@ -31,6 +33,10 @@ services:
       KC_DB_USERNAME: '{{ keycloak_username }}'
       KC_DB_PASSWORD: '{{ keycloak_password }}'
       KC_DB: 'postgres'
+      KC_HOSTNAME_STRICT_HTTPS: 'true'
+      KC_HOSTNAME: 'auth.local'
+      KC_PROXY: 'edge'
+      KC_HOSTNAME_ADMIN_URL: 'https://auth.local'
     deploy:
       labels:
         - traefik.enable=true
