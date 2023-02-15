@@ -31,7 +31,7 @@ echo 'Keycloak alive'
 
 /entrypoint.sh apache2-foreground &
 
-OIDC_CLIENT_SECRET=$(keycloakCurl http://keycloak:8080/admin/realms/vcc/clients/nextcloud | jq -r '.secret')
+# OIDC_CLIENT_SECRET=$(keycloakCurl http://keycloak:8080/admin/realms/vcc/clients/nextcloud | jq -r '.secret')
 
 # Wait until Nextcloud install is complete
 until runOCC status --output json_pretty | grep "installed" | grep -q "true"; do
@@ -44,18 +44,21 @@ echo 'Nextcloud ready'
 runOCC app:install oidc_login
 
 # Setup OpenID Connect login settings on Nextcloud
-setBoolean allow_user_to_change_display_name false
-setString lost_password_link disabled
-setBoolean oidc_login_disable_registration false
 
+runOCC config:system:set trusted_domains 1 --value="192.168.50.10"
+runOCC config:system:set trusted_domains 2 --value="cloud.local"
+
+setBoolean allow_user_to_change_display_name false
+setString lost_password_link disabled   
+setBoolean oidc_login_disable_registration false
 setString oidc_login_provider_url "${OIDC_PROVIDER_URL}"
 setString oidc_login_client_id "${OIDC_CLIENT_ID}"
-setString oidc_login_client_secret "${OIDC_CLIENT_SECRET}"
 setBoolean oidc_login_end_session_redirect true
 setString oidc_login_client_secret "${OIDC_CLIENT_SECRET}"
 setString oidc_login_logout_url "${OIDC_LOGOUT_URL}"
 setBoolean oidc_login_auto_redirect true
 setBoolean oidc_login_redir_fallback true
+setBoolean oidc_login_tls_verify false
 
 runOCC config:system:set --value=preferred_username --type=string -- oidc_login_attributes id
 runOCC config:system:set --value=email --type=string -- oidc_login_attributes mail
