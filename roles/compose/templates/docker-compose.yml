@@ -49,9 +49,6 @@ services:
         - traefik.http.routers.keycloak-public-https.rule=Host(`auth.local`)
         - traefik.http.routers.keycloak-public-https.entrypoints=https
         - traefik.http.routers.keycloak-public-https.tls=true
-        # sticky session
-        # - traefik.http.services.keycloak_service.loadbalancer.sticky=true
-        # - traefik.http.services.keycloak_service.loadbalancer.sticky.cookie.name=StickyCookie
         # Define the port inside of the Docker service to use
         - traefik.http.services.keycloak-public.loadbalancer.server.port=8080
     command:
@@ -69,6 +66,9 @@ services:
       - '{{ nextcloud_data_dir }}/html:/var/www/html'
     networks:
       - skynet
+    extra_hosts:
+      - "auth.local:192.168.50.10"
+      - "cloud.local:192.168.50.10"
     environment:
       POSTGRES_DB: 'nextcloud'
       POSTGRES_USER: '{{ nextcloud_username }}'
@@ -79,6 +79,10 @@ services:
       NEXTCLOUD_TRUSTED_DOMAINS: 'cloud.local'
       KEYCLOAK_USERNAME: '{{ keycloak_username }}' # used for integrator
       KEYCLOAK_PASSWORD: '{{ keycloak_password }}' # used for integrator
+      OIDC_CLIENT_ID: 'nextcloud'
+      OIDC_PROVIDER_URL: 'http://auth.local/realms/vcc'
+      OIDC_LOGOUT_URL: 'http://cloud.local/apps/oidc_login/oidc'
+      OIDC_CLIENT_SECRET: 'xjbaq5pe4EsDgZXoxUFut56sTz3OrLXG'
     deploy:
       labels:
         - traefik.enable=true
@@ -91,9 +95,6 @@ services:
         - traefik.http.routers.nextcloud-public-https.rule=Host(`cloud.local`)
         - traefik.http.routers.nextcloud-public-https.entrypoints=https
         - traefik.http.routers.nextcloud-public-https.tls=true
-        # sticky session
-        # - traefik.http.services.nextcloud_service.loadbalancer.sticky=true
-        # - traefik.http.services.nextcloud_service.loadbalancer.sticky.cookie.name=StickyCookie
         # Define the port inside of the Docker service to use
         - traefik.http.services.nextcloud-public.loadbalancer.server.port=80
 

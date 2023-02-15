@@ -48,11 +48,12 @@ setBoolean allow_user_to_change_display_name false
 setString lost_password_link disabled
 setBoolean oidc_login_disable_registration false
 
-setString oidc_login_provider_url "https://auth.local/realms/vcc"
-setString oidc_login_client_id "nextcloud"
+setString oidc_login_provider_url "${OIDC_PROVIDER_URL}"
+setString oidc_login_client_id "${OIDC_CLIENT_ID}"
 setString oidc_login_client_secret "${OIDC_CLIENT_SECRET}"
 setBoolean oidc_login_end_session_redirect true
-setString oidc_login_logout_url "https://cloud.local/apps/oidc_login/oidc"
+setString oidc_login_client_secret "${OIDC_CLIENT_SECRET}"
+setString oidc_login_logout_url "${OIDC_LOGOUT_URL}"
 setBoolean oidc_login_auto_redirect true
 setBoolean oidc_login_redir_fallback true
 
