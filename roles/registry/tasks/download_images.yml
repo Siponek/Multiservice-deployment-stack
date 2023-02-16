@@ -192,3 +192,28 @@
     source: pull
     push: true
   when: inventory_hostname == groups['swarm_managers'][0]
+
+# grafana/loki:v2.7.1
+- name: Pull grafana image
+  community.docker.docker_image:
+    name: grafana/loki:v2.7.1
+    repository: "{{ docker_registry_url }}/grafana:v2.7.1"
+    source: pull
+  when: inventory_hostname == groups['swarm_managers'][0]
+
+- name: Wait for grafana image
+  community.docker.docker_image_info:
+    name: "{{ docker_registry_url }}/grafana:v2.7.1"
+  register: prometheus_image
+  until: prometheus_image.images | length > 0
+  retries: 10
+  delay: 5
+  when: inventory_hostname == groups['swarm_managers'][0]
+
+- name: Push prometheus to registry
+  community.docker.docker_image:
+    name: grafana:v2.7.1
+    repository: "{{ docker_registry_url }}/grafana:v2.7.1"
+    source: pull
+    push: true
+  when: inventory_hostname == groups['swarm_managers'][0]
