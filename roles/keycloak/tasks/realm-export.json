@@ -480,25 +480,17 @@
   "webAuthnPolicyPasswordlessAcceptableAaguids": [],
   "users": [
     {
-      "id": "15fdeb2f-be4b-44cc-922a-ddf5e23bd738",
-      "createdTimestamp": 1676410173422,
-      "username": "service-account-nextcloud",
+      "username": "{{ realm_username }}",
       "enabled": true,
-      "totp": false,
-      "emailVerified": false,
-      "serviceAccountClientId": "nextcloud",
-      "disableableCredentialTypes": [],
-      "requiredActions": [],
-      "realmRoles": [
-        "default-roles-vcc"
+      "credentials": [
+          {
+              "type": "password",
+              "value": "{{ realm_password }}"
+          }
       ],
-      "clientRoles": {
-        "nextcloud": [
-          "uma_protection"
-        ]
-      },
-      "notBefore": 0,
-      "groups": []
+      "realmRoles": [
+          "user"
+      ]
     }
   ],
   "scopeMappings": [
