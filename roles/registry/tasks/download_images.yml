@@ -133,12 +133,37 @@
   register: traefik_image
   until: traefik_image.images | length > 0
   retries: 10
+  delay: 5
   when: inventory_hostname == groups['swarm_managers'][0]
 
 - name: Push traefik to registry  
   community.docker.docker_image:
     name: traefik:v2.9.6
     repository: "{{ docker_registry_url }}/traefik:v2.9.6"
+    source: pull
+    push: true
+  when: inventory_hostname == groups['swarm_managers'][0]
+
+- name: Pull fluent-bit image
+  community.docker.docker_image:
+    name: cr.fluentbit.io/fluent/fluent-bit:2.0.6
+    repository: "{{ docker_registry_url }}/fluent-bit:2.0.6"
+    source: pull
+  when: inventory_hostname == groups['swarm_managers'][0]
+
+- name: Wait for fluent-bit image
+  community.docker.docker_image_info:
+    name: "{{ docker_registry_url }}/fluent-bit:2.0.6"
+  register: traefik_image
+  until: traefik_image.images | length > 0
+  retries: 10
+  delay: 5
+  when: inventory_hostname == groups['swarm_managers'][0]
+
+- name: Push fluent-bit to registry  
+  community.docker.docker_image:
+    name: fluent-bit:2.0.6
+    repository: "{{ docker_registry_url }}/fluent-bit:2.0.6"
     source: pull
     push: true
   when: inventory_hostname == groups['swarm_managers'][0]
