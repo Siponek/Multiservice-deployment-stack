@@ -101,7 +101,6 @@
   when: inventory_hostname == groups['swarm_managers'][0]
 
 #traefik
-
 - name: Create /data/certs
   ansible.builtin.file:
     path: "/data/certs"
@@ -144,6 +143,7 @@
     push: true
   when: inventory_hostname == groups['swarm_managers'][0]
 
+# fluent-bit
 - name: Pull fluent-bit image
   community.docker.docker_image:
     name: cr.fluentbit.io/fluent/fluent-bit:2.0.6
@@ -164,6 +164,31 @@
   community.docker.docker_image:
     name: fluent-bit:2.0.6
     repository: "{{ docker_registry_url }}/fluent-bit:2.0.6"
+    source: pull
+    push: true
+  when: inventory_hostname == groups['swarm_managers'][0]
+
+# prometheus form prom/prometheus:v2.40.6
+- name: Pull prometheus image
+  community.docker.docker_image:
+    name: prom/prometheus:v2.40.6
+    repository: "{{ docker_registry_url }}/prometheus:v2.40.6"
+    source: pull
+  when: inventory_hostname == groups['swarm_managers'][0]
+
+- name: Wait for prometheus image
+  community.docker.docker_image_info:
+    name: "{{ docker_registry_url }}/prometheus:v2.40.6"
+  register: prometheus_image
+  until: prometheus_image.images | length > 0
+  retries: 10
+  delay: 5
+  when: inventory_hostname == groups['swarm_managers'][0]
+
+- name: Push prometheus to registry
+  community.docker.docker_image:
+    name: prometheus:v2.40.6
+    repository: "{{ docker_registry_url }}/prometheus:v2.40.6"
     source: pull
     push: true
   when: inventory_hostname == groups['swarm_managers'][0]
