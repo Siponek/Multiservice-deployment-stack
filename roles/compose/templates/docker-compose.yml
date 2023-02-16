@@ -158,22 +158,20 @@ services:
       - --log
       # Enable the Dashboard and API
       - --api
+
+  fluent-bit:
+    image: '{{ docker_registry_url }}/fluent-bit:2.0.6'
+    configs:
+    - source: /data/fluent-bit/fluent-bit.conf
+      target: /fluent-bit/etc/fluent-bit.conf
+    deploy:
+      mode: global
+    environment:
+      - LOKI_URL=http://loki:3100/loki/api/v1/push
     networks:
       - skynet
-  fluent-bit:
-    image: "{{ docker_registry_url }}/fluent-bit:2.0.6"
-    
     volumes:
-      - /data/fluentbit/fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf
-    depends_on:
-      - elasticsearch
-  elasticsearch:
-    image: elasticsearch:7.6.2
-    ports:
-      - "9200:9200"
-    environment:
-      - discovery.type=single-node
-
+      - /var/lib/docker/containers:/var/lib/docker/containers
 
 networks:
   skynet:
