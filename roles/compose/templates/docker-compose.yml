@@ -160,6 +160,20 @@ services:
       - --api
     networks:
       - skynet
+  fluent-bit:
+    image: "{{ docker_registry_url }}/fluent-bit:2.0.6"
+    
+    volumes:
+      - /data/fluentbit/fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf
+    depends_on:
+      - elasticsearch
+  elasticsearch:
+    image: elasticsearch:7.6.2
+    ports:
+      - "9200:9200"
+    environment:
+      - discovery.type=single-node
+
 
 networks:
   skynet:
