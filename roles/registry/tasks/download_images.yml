@@ -5,42 +5,11 @@
     name: traefik:v2.9.6
     repository: "{{ docker_registry_url }}/traefik:v2.9.6"
     source: pull
-  when: inventory_hostname == groups['swarm_managers'][0]
-
-- name: Wait for traefik image
-  community.docker.docker_image_info:
-    name: "{{ docker_registry_url }}/traefik:v2.9.6"
-  register: traefik_image
-  until: traefik_image.images | length > 0
-  retries: 10
-  when: inventory_hostname == groups['swarm_managers'][0]
-
-- name: Push traefik to registry
-  community.docker.docker_image:
-    name: traefik:v2.9.6
-    repository: "{{ docker_registry_url }}/traefik:v2.9.6"
-    source: pull
     push: true
   when: inventory_hostname == groups['swarm_managers'][0]
 
-# posrgrtesds
+# postgres
 - name: Pull postgres image
-  community.docker.docker_image:
-    name: postgres:15.1
-    repository: "{{ docker_registry_url }}/postgres:15.1"
-    source: pull
-  when: inventory_hostname == groups['swarm_managers'][0]
-
-- name: Wait for postgres image
-  community.docker.docker_image_info:
-    name: "{{ docker_registry_url }}/postgres:15.1"
-  register: postgres_image
-  until: postgres_image.images | length > 0
-  retries: 10
-  delay: 5
-  when: inventory_hostname == groups['swarm_managers'][0]
-
-- name: Push postgres to registry
   community.docker.docker_image:
     name: postgres:15.1
     repository: "{{ docker_registry_url }}/postgres:15.1"
@@ -54,24 +23,7 @@
     name: "nextcloud:23.0-apache"
     repository: "{{ docker_registry_url }}/nextcloud:23.0-apache"
     source: pull
-  when: inventory_hostname == groups['swarm_managers'][0]
-
-- name: Wait for nextcloud image
-  community.docker.docker_image_info:
-    name: "{{ docker_registry_url }}/nextcloud:23.0-apache"
-  register: nextcloud_image
-  until: nextcloud_image.images | length > 0
-  retries: 10
-  delay: 5
-  when: inventory_hostname == groups['swarm_managers'][0]
-
-- name: Push nextcloud to registry
-  community.docker.docker_image:
-    name: "{{ docker_registry_url }}/nextcloud:23.0-apache"
-    repository: "{{ docker_registry_url }}/nextcloud:23.0-apache"
-    source: pull
     push: true
-    debug: true
   when: inventory_hostname == groups['swarm_managers'][0]
 
 # keycloak
@@ -80,62 +32,11 @@
     name: quay.io/keycloak/keycloak:20.0.1
     repository: "{{ docker_registry_url }}/keycloak:20.0.1"
     source: pull
-  when: inventory_hostname == groups['swarm_managers'][0]
-
-- name: Wait for keycloak image
-  community.docker.docker_image_info:
-    name: "{{ docker_registry_url }}/keycloak:20.0.1"
-  register: keycloak_image
-  until: keycloak_image.images | length > 0
-  retries: 10
-  delay: 5
-  when: inventory_hostname == groups['swarm_managers'][0]
-
-- name: Push keycloak to registry
-  community.docker.docker_image:
-    name: "{{ docker_registry_url }}/keycloak:20.0.1"
-    repository: "{{ docker_registry_url }}/keycloak:20.0.1"
-    source: pull
     push: true
-    debug: true
   when: inventory_hostname == groups['swarm_managers'][0]
 
-#traefik
-- name: Create /data/certs
-  ansible.builtin.file:
-    path: "/data/certs"
-    state: directory
-    owner: root
-    group: root
-    mode: 0755
-  when: inventory_hostname == groups['swarm_managers'][0]
-
-- name: Create /data/traefik
-  ansible.builtin.file:
-    path: "/data/traefik"
-    state: directory
-    owner: root
-    group: root
-    mode: 0755
-  when: inventory_hostname == groups['swarm_managers'][0]
-
-- name: Pull traefik image
-  community.docker.docker_image:
-    name: traefik:v2.9.6
-    repository: "{{ docker_registry_url }}/traefik:v2.9.6"
-    source: pull
-  when: inventory_hostname == groups['swarm_managers'][0]
-
-- name: Wait for traefik image
-  community.docker.docker_image_info:
-    name: "{{ docker_registry_url }}/traefik:v2.9.6"
-  register: traefik_image
-  until: traefik_image.images | length > 0
-  retries: 10
-  delay: 5
-  when: inventory_hostname == groups['swarm_managers'][0]
-
-- name: Push traefik to registry  
+# traefik
+- name: Get traefik image
   community.docker.docker_image:
     name: traefik:v2.9.6
     repository: "{{ docker_registry_url }}/traefik:v2.9.6"
@@ -144,76 +45,29 @@
   when: inventory_hostname == groups['swarm_managers'][0]
 
 # fluent-bit
-- name: Pull fluent-bit image
+- name: Get fluent-bit image
   community.docker.docker_image:
     name: cr.fluentbit.io/fluent/fluent-bit:2.0.6
     repository: "{{ docker_registry_url }}/fluent-bit:2.0.6"
     source: pull
-  when: inventory_hostname == groups['swarm_managers'][0]
-
-- name: Wait for fluent-bit image
-  community.docker.docker_image_info:
-    name: "{{ docker_registry_url }}/fluent-bit:2.0.6"
-  register: traefik_image
-  until: traefik_image.images | length > 0
-  retries: 10
-  delay: 5
-  when: inventory_hostname == groups['swarm_managers'][0]
-
-- name: Push fluent-bit to registry  
-  community.docker.docker_image:
-    name: fluent-bit:2.0.6
-    repository: "{{ docker_registry_url }}/fluent-bit:2.0.6"
-    source: pull
     push: true
   when: inventory_hostname == groups['swarm_managers'][0]
 
-# prometheus form prom/prometheus:v2.40.6
-- name: Pull prometheus image
+# prometheus
+- name: Get prometheus image
   community.docker.docker_image:
     name: prom/prometheus:v2.40.6
     repository: "{{ docker_registry_url }}/prometheus:v2.40.6"
     source: pull
-  when: inventory_hostname == groups['swarm_managers'][0]
-
-- name: Wait for prometheus image
-  community.docker.docker_image_info:
-    name: "{{ docker_registry_url }}/prometheus:v2.40.6"
-  register: prometheus_image
-  until: prometheus_image.images | length > 0
-  retries: 10
-  delay: 5
-  when: inventory_hostname == groups['swarm_managers'][0]
-
-- name: Push prometheus to registry
-  community.docker.docker_image:
-    name: prometheus:v2.40.6
-    repository: "{{ docker_registry_url }}/prometheus:v2.40.6"
-    source: pull
     push: true
   when: inventory_hostname == groups['swarm_managers'][0]
 
-# grafana/loki:v2.7.1
-- name: Pull grafana image
+# grafana
+# Warn: tag is only 2.7.1 (no v) -> https://github.com/grafana/loki/releases/tag/v2.7.1
+- name: Get grafana image
   community.docker.docker_image:
-    name: grafana/loki:v2.7.1
-    repository: "{{ docker_registry_url }}/grafana:v2.7.1"
-    source: pull
-  when: inventory_hostname == groups['swarm_managers'][0]
-
-- name: Wait for grafana image
-  community.docker.docker_image_info:
-    name: "{{ docker_registry_url }}/grafana:v2.7.1"
-  register: prometheus_image
-  until: prometheus_image.images | length > 0
-  retries: 10
-  delay: 5
-  when: inventory_hostname == groups['swarm_managers'][0]
-
-- name: Push prometheus to registry
-  community.docker.docker_image:
-    name: grafana:v2.7.1
-    repository: "{{ docker_registry_url }}/grafana:v2.7.1"
+    name: grafana/loki:2.7.1
+    repository: "{{ docker_registry_url }}/grafana:2.7.1"
     source: pull
     push: true
   when: inventory_hostname == groups['swarm_managers'][0]
