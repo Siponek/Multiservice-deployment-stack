@@ -71,3 +71,4 @@
 
 - name: Launch download-images.yml
   ansible.builtin.include_tasks: download_images.yml
+  when: inventory_hostname == groups['swarm_managers'][0]
