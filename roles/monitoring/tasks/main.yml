@@ -8,10 +8,10 @@
     mode: "0755"
   when: inventory_hostname == groups['swarm_managers'][0]
 
-- name: Copy fluent-bit.conf to /data/fluentbit
+- name: Copy fluent-bit.conf to /data/fluent-bit
   ansible.builtin.copy:
     src: ../conf/fluent-bit.conf
-    dest: /data/fluentbit/fluent-bit.conf
+    dest: /data/fluent-bit/fluent-bit.conf
     owner: root
     group: root
     mode: "0777"
@@ -29,6 +29,15 @@
 - name: Create /data/loki
   ansible.builtin.file:
     path: "/data/loki"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  when: inventory_hostname == groups['swarm_managers'][0]
+
+- name: Create /data/grafana
+  ansible.builtin.file:
+    path: "/data/grafana"
     state: directory
     owner: root
     group: root
