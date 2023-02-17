@@ -8,10 +8,11 @@
     - docker
     - docker_swarm
     - registry
+    - traefik
     - database
     - keycloak
     - nextcloud
+    - monitoring
+    - logging
+    - dashboard
     - compose
-    # - monitoring
-    # - logging
-    # - dashboard
