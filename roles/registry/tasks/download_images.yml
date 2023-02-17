@@ -55,11 +55,11 @@
     source: pull
     push: true
 
-# grafana
+# loki
 # Warn: tag is only 2.7.1 (no v) -> https://github.com/grafana/loki/releases/tag/v2.7.1
-- name: Get grafana image
+- name: Get loki image
   community.docker.docker_image:
     name: grafana/loki:2.7.1
-    repository: "{{ docker_registry_url }}/grafana:2.7.1"
+    repository: "{{ docker_registry_url }}/loki:2.7.1"
     source: pull
     push: true
