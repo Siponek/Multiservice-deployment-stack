@@ -63,3 +63,11 @@
     repository: "{{ docker_registry_url }}/loki:2.7.1"
     source: pull
     push: true
+
+# grafana
+- name: Get grafana image
+  community.docker.docker_image:
+    name: grafana/grafana:9.3.1
+    repository: "{{ docker_registry_url }}/grafana:8.3.2"
+    source: pull
+    push: true
