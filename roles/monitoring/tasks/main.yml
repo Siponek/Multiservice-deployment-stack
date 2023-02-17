@@ -1,40 +1,36 @@
 ---
-# create directory fluentbit
 - name: Create /data/fluentbit
   ansible.builtin.file:
     path: "/data/fluentbit"
     state: directory
     owner: root
     group: root
-    mode: 0755
+    mode: "0755"
   when: inventory_hostname == groups['swarm_managers'][0]
 
-# copy ./conf/fluent-bit.conf to /data/fluentbit/fluent-bit.conf
 - name: Copy fluent-bit.conf to /data/fluentbit
   ansible.builtin.copy:
     src: ../conf/fluent-bit.conf
     dest: /data/fluentbit/fluent-bit.conf
     owner: root
     group: root
-    mode: 0777
+    mode: "0777"
   when: inventory_hostname == groups['swarm_managers'][0]
 
-# create /data/prometheus
-- name: create /data/prometheus
+- name: Create /data/prometheus
   ansible.builtin.file:
     path: "/data/prometheus"
     state: directory
     owner: root
     group: root
-    mode: 0755
+    mode: "0755"
   when: inventory_hostname == groups['swarm_managers'][0]
 
-# create /data/loki
-- name: create /data/loki
+- name: Create /data/loki
   ansible.builtin.file:
     path: "/data/loki"
     state: directory
     owner: root
     group: root
-    mode: 0755
+    mode: "0755"
   when: inventory_hostname == groups['swarm_managers'][0]
