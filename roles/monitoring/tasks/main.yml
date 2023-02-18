@@ -43,3 +43,12 @@
     group: root
     mode: "0755"
   when: inventory_hostname == groups['swarm_managers'][0]
+
+- name: Create /data/grafana-provisioning
+  ansible.builtin.file:
+    path: "/data/grafana-provisioning"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  when: inventory_hostname == groups['swarm_managers'][0]

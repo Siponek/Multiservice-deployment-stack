@@ -59,6 +59,7 @@ services:
     container_name: nextcloud
     depends_on:
       - postgres
+    restart: on-failure
     volumes:
       - '{{ nextcloud_data_dir }}:/var/www'
       - '{{ nextcloud_data_dir }}/html:/var/www/html'
@@ -182,9 +183,12 @@ services:
     ports:
       - 3000:3000
     volumes:
+      - /data/grafana-provisioning:/etc/grafana/provisioning/datasources
       - /data/grafana:/var/lib/grafana
     networks:
       - skynet
+    restart: unless-stopped
+    user: root
     deploy:
       labels:
         - traefik.enable=true
