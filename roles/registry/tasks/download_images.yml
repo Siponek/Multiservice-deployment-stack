@@ -1,12 +1,4 @@
 ---
-# traefik
-- name: Pull traefik image
-  community.docker.docker_image:
-    name: traefik:v2.9.6
-    repository: "{{ docker_registry_url }}/traefik:v2.9.6"
-    source: pull
-    push: true
-
 # postgres
 - name: Pull postgres image
   community.docker.docker_image:
