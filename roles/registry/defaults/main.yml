@@ -4,23 +4,3 @@ registry_port: 5000
 registry_volume: /data/docker-registry
 registry_cache_volume: /data/docker-registry-cache
 registry_htpasswd_path: /data/auth/htpasswd
-
-# Images versions
-traefik_img: traefik:v2.9.6
-postgres_img: postgres:15.1
-nextcloud_img: nextcloud:23.0-apache
-keycloak_img: keycloak:20.0.1
-fluentbit_img: fluent-bit:2.0.6
-prometheus_img: prometheus:v2.40.6
-loki_img: loki:2.7.1
-grafana_img: grafana:9.3.1
-
-# Images version with registry
-traefik_img_repo: '{{ traefik_img}}'
-postgres_img_repo: '{{ postgres_img }}'
-nextcloud_img_repo: '{{ nextcloud_img }}'
-keycloak_img_repo: 'quay.io/keycloak/{{ keycloak_img }}'
-fluentbit_img_repo: 'cr.fluentbit.io/fluent/{{ fluentbit_img }}}'
-prometheus_img_repo: 'prom/{{ prometheus_img}}'
-loki_img_repo: 'grafana/{{ loki_img }}}'
-grafana_img_repo: 'grafana/{{ grafana_img }}'

@@ -2,48 +2,48 @@
 # postgres
 - name: Pull postgres image
   community.docker.docker_image:
-    name: '{{ postgres_img_repo }}'
-    repository: '{{ docker_registry_url }}/{{ postgres_img }}'
+    name: postgres:15.1
+    repository: "{{ docker_registry_url }}/postgres:15.1"
     source: pull
     push: true
 
 # nextcloud
 - name: Pull nextcloud image
   community.docker.docker_image:
-    name: '{{ nextcloud_img_repo }}'
-    repository: '{{ docker_registry_url }}/{{ nextcloud_img }}'
+    name: "nextcloud:23.0-apache"
+    repository: "{{ docker_registry_url }}/nextcloud:23.0-apache"
     source: pull
     push: true
 
 # keycloak
 - name: Pull Keycloak image
   community.docker.docker_image:
-    name: '{{ keycloak_img_repo }}'
-    repository: '{{ docker_registry_url }}/{{ keycloak_img }}'
+    name: quay.io/keycloak/keycloak:20.0.1
+    repository: "{{ docker_registry_url }}/keycloak:20.0.1"
     source: pull
     push: true
 
 # traefik
 - name: Get traefik image
   community.docker.docker_image:
-    name: '{{ traefik_img_repo }}'
-    repository: '{{ docker_registry_url }}/{{ traefik_img }}'
+    name: traefik:v2.9.6
+    repository: "{{ docker_registry_url }}/traefik:v2.9.6"
     source: pull
     push: true
 
 # fluent-bit
 - name: Get fluent-bit image
   community.docker.docker_image:
-    name: '{{ fluentbit_img_repo }}'
-    repository: '{{ docker_registry_url }}/{{ fluentbit_img }}'
+    name: cr.fluentbit.io/fluent/fluent-bit:2.0.6
+    repository: "{{ docker_registry_url }}/fluent-bit:2.0.6"
     source: pull
     push: true
 
 # prometheus
 - name: Get prometheus image
   community.docker.docker_image:
-    name: '{{ prometheus_img_repo }}'
-    repository: '{{ docker_registry_url }}/{{ prometheus_img }}'
+    name: prom/prometheus:v2.40.6
+    repository: "{{ docker_registry_url }}/prometheus:v2.40.6"
     source: pull
     push: true
 
@@ -51,15 +51,15 @@
 # Warn: tag is only 2.7.1 (no v) -> https://github.com/grafana/loki/releases/tag/v2.7.1
 - name: Get loki image
   community.docker.docker_image:
-    name: '{{ loki_img_repo }}'
-    repository: '{{ docker_registry_url }}/{{ loki_img }}'
+    name: grafana/loki:2.7.1
+    repository: "{{ docker_registry_url }}/loki:2.7.1"
     source: pull
     push: true
 
 # grafana
 - name: Get grafana image
   community.docker.docker_image:
-    name: '{{ grafana_img_repo }}'
-    repository: '{{ docker_registry_url }}/{{ grafana_img }}'
+    name: grafana/grafana:9.3.1
+    repository: "{{ docker_registry_url }}/grafana:8.3.2"
     source: pull
     push: true
