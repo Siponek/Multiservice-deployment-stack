@@ -174,8 +174,8 @@ services:
     ports:
       - "9090:9090"
     volumes:
-      - /etc/prometheus:/etc/prometheus
-      - prometheus-data:/prometheus
+      - /data/prometheus:/etc/prometheus
+      - /data/prometheus-data:/prometheus
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - skynet

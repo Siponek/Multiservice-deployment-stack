@@ -1,29 +1,36 @@
 ---
-- name: Create /data/fluentbit
-  ansible.builtin.file:
-    path: "/data/fluent-bit"
-    state: directory
-    owner: root
-    group: root
-    mode: "0755"
+- block:
+  - name: Create /data/fluentbit
+    ansible.builtin.file:
+      path: "/data/fluent-bit"
+      state: directory
+      owner: root
+      group: root
+      mode: "0755"
+  - name: Copy fluent-bit.conf to /data/fluent-bit
+    ansible.builtin.copy:
+      src: ../conf/fluent-bit.conf
+      dest: /data/fluent-bit/fluent-bit.conf
+      owner: root
+      group: root
+      mode: "0777"
   when: inventory_hostname == groups['nfs_servers'][0]
 
-- name: Copy fluent-bit.conf to /data/fluent-bit
-  ansible.builtin.copy:
-    src: ../conf/fluent-bit.conf
-    dest: /data/fluent-bit/fluent-bit.conf
-    owner: root
-    group: root
-    mode: "0777"
-  when: inventory_hostname == groups['nfs_servers'][0]
-
-- name: Create /data/prometheus
-  ansible.builtin.file:
-    path: "/data/prometheus"
-    state: directory
-    owner: root
-    group: root
-    mode: "0755"
+- block:
+  - name: Create /data/prometheus
+    ansible.builtin.file:
+      path: "/data/prometheus"
+      state: directory
+      owner: root
+      group: root
+      mode: "0755"
+  - name: Create prometheus-data folder
+    ansible.builtin.file:
+      path: "/data/prometheus-data"
+      state: directory
+      owner: root
+      group: root
+      mode: "0755"
   when: inventory_hostname == groups['nfs_servers'][0]
 
 - name: Create /data/loki
@@ -35,20 +42,19 @@
     mode: "0755"
   when: inventory_hostname == groups['nfs_servers'][0]
 
-- name: Create /data/grafana
-  ansible.builtin.file:
-    path: "/data/grafana"
-    state: directory
-    owner: root
-    group: root
-    mode: "0755"
-  when: inventory_hostname == groups['nfs_servers'][0]
-
-- name: Create /data/grafana-provisioning
-  ansible.builtin.file:
-    path: "/data/grafana-provisioning"
-    state: directory
-    owner: root
-    group: root
-    mode: "0755"
+- block:
+  - name: Create /data/grafana
+    ansible.builtin.file:
+      path: "/data/grafana"
+      state: directory
+      owner: root
+      group: root
+      mode: "0755"
+  - name: Create /data/grafana-provisioning
+    ansible.builtin.file:
+      path: "/data/grafana-provisioning"
+      state: directory
+      owner: root
+      group: root
+      mode: "0755"
   when: inventory_hostname == groups['nfs_servers'][0]
