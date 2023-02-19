@@ -170,7 +170,7 @@ services:
       - /data/fluent-bit/fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf
 
   prometheus:
-    image: '{{ docker_registry_url }}/{{ prometheus_img }}'
+    image: '{{ docker_registry_url }}/prometheus:v2.40.6'
     ports:
       - "9090:9090"
     volumes:
