@@ -1,7 +1,7 @@
 ---
 - name: Create /data/fluentbit
   ansible.builtin.file:
-    path: "/data/fluentbit"
+    path: "/data/fluent-bit"
     state: directory
     owner: root
     group: root
