@@ -22,15 +22,12 @@
     mode: "0755"
 
 # Setting deamon to accept insecure connections and use the registry as a mirror
-# and to expose metrics for prometheus
 - name: Set deamon.json
   ansible.builtin.copy:
     dest: /etc/docker/daemon.json
     content: |
       {
-        "insecure-registries": ["{{ docker_registry_url }}"],
-        "metrics-addr" : "{{ hostvars[groups['swarm_managers'][0]]['ansible_host'] }}:9323",
-        "experimental" : true
+        "insecure-registries": ["{{ docker_registry_url }}"]
       }
     force: true
     owner: root
