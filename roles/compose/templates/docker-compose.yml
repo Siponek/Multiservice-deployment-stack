@@ -156,44 +156,44 @@ services:
 
 #### logging and monitoring ####
 
-  # fluent-bit:
-  #   image: '{{ docker_registry_url }}/fluent-bit:2.0.6'
-  #   deploy:
-  #     mode: global
-  #   networks:
-  #     - skynet
-  #   volumes:
-  #     - /var/lib/docker/containers:/var/lib/docker/containers
-  #     - /data/fluent-bit/fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf
+  fluent-bit:
+    image: '{{ docker_registry_url }}/fluent-bit:2.0.6'
+    networks:
+      - skynet
+    volumes:
+      - /data/fluent-bit/fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf
+      - /var/lib/docker/containers:/var/lib/docker/containers
+    deploy:
+      mode: global
 
-  # prometheus:
-  #   image: '{{ docker_registry_url }}/prometheus:v2.40.6'
-  #   ports:
-  #     - "9090:9090"
-  #   volumes:
-  #     - /data/prometheus:/etc/prometheus
-  #     - /data/prometheus-data:/prometheus
-  #     - /var/run/docker.sock:/var/run/docker.sock
-  #   networks:
-  #     - skynet
-  #   restart: unless-stopped
-  #   command:
-  #     - "--config.file=/etc/prometheus/prometheus.yml"
-  #   deploy:
-  #     mode: replicated
-  #     replicas: 1
-  #     placement:
-  #       constraints:
-  #         - node.role == manager
+  prometheus:
+    image: '{{ docker_registry_url }}/prometheus:v2.40.6'
+    ports:
+      - "9090:9090"
+    volumes:
+      - /data/prometheus:/etc/prometheus
+      - /data/prometheus-data:/prometheus
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - skynet
+    restart: unless-stopped
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
 
-  # loki:
-  #   image: '{{ docker_registry_url }}/loki:2.7.1'
-  #   ports:
-  #     - 3100:3100
-  #   volumes:
-  #     - /data/loki:/data
-  #   networks:
-  #     - skynet
+  loki:
+    image: '{{ docker_registry_url }}/loki:2.7.1'
+    ports:
+      - 3100:3100
+    volumes:
+      - /data/loki:/data
+    networks:
+      - skynet
 
   grafana:
     image: '{{ docker_registry_url }}/grafana:9.3.1'
