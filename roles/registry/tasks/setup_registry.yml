@@ -10,7 +10,7 @@
     state: directory
     owner: root
     group: root
-    mode: 0755
+    mode: "0755"
   when: inventory_hostname == groups['nfs_servers'][0]
 
 - name: Create /etc/docker
@@ -19,20 +19,23 @@
     state: directory
     owner: root
     group: root
-    mode: 0755
+    mode: "0755"
 
 # Setting deamon to accept insecure connections and use the registry as a mirror
+# and to expose metrics for prometheus
 - name: Set deamon.json
   ansible.builtin.copy:
     dest: /etc/docker/daemon.json
     content: |
       {
-        "insecure-registries": ["{{ docker_registry_url }}"]
+        "insecure-registries": ["{{ docker_registry_url }}"],
+        "metrics-addr" : "{{ hostvars[groups['swarm_managers'][0]]['ansible_host'] }}:9323",
+        "experimental" : true
       }
     force: true
     owner: root
     group: root
-    mode: 0644
+    mode: "0644"
 
 - name: Restart docker
   ansible.builtin.service:
