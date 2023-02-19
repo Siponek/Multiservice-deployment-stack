@@ -18,8 +18,6 @@ services:
       - postgres
     volumes:
       - '/data/keycloak/realm-export.json:/opt/keycloak/data/import/main-realm.json'
-    ports:
-      - 9000:8080
     networks:
       - skynet
     restart: on-failure
@@ -56,10 +54,8 @@ services:
   nextcloud:
     image: '{{ docker_registry_url }}/nextcloud:23.0-apache'
     entrypoint: sh -c 'apt update && apt install jq grep sudo -y && /var/www/nextcloud-integrator.sh'
-    container_name: nextcloud
     depends_on:
       - postgres
-    restart: on-failure
     volumes:
       - '{{ nextcloud_data_dir }}:/var/www'
       - '{{ nextcloud_data_dir }}/html:/var/www/html'
@@ -107,10 +103,11 @@ services:
         published: 443
         mode: host
       - 8080:8080
+    networks:
+      - skynet
     volumes:
       - /data/certs:/etc/ssl/traefik
       - /data/traefik:/etc/traefik/dynamic
-      - /data/:/logs
       - /var/run/docker.sock:/var/run/docker.sock:ro
     deploy:
       mode: replicated
@@ -159,70 +156,70 @@ services:
 
 #### logging and monitoring ####
 
-  fluent-bit:
-    image: '{{ docker_registry_url }}/fluent-bit:2.0.6'
-    deploy:
-      mode: global
-    networks:
-      - skynet
-    volumes:
-      - /var/lib/docker/containers:/var/lib/docker/containers
-      - /data/fluent-bit/fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf
+  # fluent-bit:
+  #   image: '{{ docker_registry_url }}/fluent-bit:2.0.6'
+  #   deploy:
+  #     mode: global
+  #   networks:
+  #     - skynet
+  #   volumes:
+  #     - /var/lib/docker/containers:/var/lib/docker/containers
+  #     - /data/fluent-bit/fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf
 
-  prometheus:
-    image: '{{ docker_registry_url }}/prometheus:v2.40.6'
-    ports:
-      - "9090:9090"
-    volumes:
-      - /data/prometheus:/etc/prometheus
-      - /data/prometheus-data:/prometheus
-      - /var/run/docker.sock:/var/run/docker.sock
-    networks:
-      - skynet
-    restart: unless-stopped
-    command:
-      - "--config.file=/etc/prometheus/prometheus.yml"
-    deploy:
-      mode: replicated
-      replicas: 1
-      placement:
-        constraints:
-          - node.role == manager
+  # prometheus:
+  #   image: '{{ docker_registry_url }}/prometheus:v2.40.6'
+  #   ports:
+  #     - "9090:9090"
+  #   volumes:
+  #     - /data/prometheus:/etc/prometheus
+  #     - /data/prometheus-data:/prometheus
+  #     - /var/run/docker.sock:/var/run/docker.sock
+  #   networks:
+  #     - skynet
+  #   restart: unless-stopped
+  #   command:
+  #     - "--config.file=/etc/prometheus/prometheus.yml"
+  #   deploy:
+  #     mode: replicated
+  #     replicas: 1
+  #     placement:
+  #       constraints:
+  #         - node.role == manager
 
-  loki:
-    image: '{{ docker_registry_url }}/loki:2.7.1'
-    ports:
-      - 3100:3100
-    volumes:
-      - /data/loki:/data
-    networks:
-      - skynet
+  # loki:
+  #   image: '{{ docker_registry_url }}/loki:2.7.1'
+  #   ports:
+  #     - 3100:3100
+  #   volumes:
+  #     - /data/loki:/data
+  #   networks:
+  #     - skynet
 
-  grafana:
-    image: '{{ docker_registry_url }}/grafana:8.3.2'
-    ports:
-      - 3000:3000
-    volumes:
-      - /data/grafana-provisioning:/etc/grafana/provisioning/datasources
-      - /data/grafana:/var/lib/grafana
-    networks:
-      - skynet
-    restart: unless-stopped
-    user: root
-    deploy:
-      labels:
-        - traefik.enable=true
-        - traefik.docker.network=skynet
-        # traefik-http set up only to use the middleware to redirect to https
-        - traefik.http.routers.grafana-public-http.rule=Host(`mon.local`)
-        - traefik.http.routers.grafana-public-http.entrypoints=http
-        - traefik.http.routers.grafana-public-http.middlewares=https-redirect
-        # traefik-https the actual router using HTTPS
-        - traefik.http.routers.grafana-public-https.rule=Host(`mon.local`)
-        - traefik.http.routers.grafana-public-https.entrypoints=https
-        - traefik.http.routers.grafana-public-https.tls=true
-        # Define the port inside of the Docker service to use
-        - traefik.http.services.grafana-public.loadbalancer.server.port=80
+  # grafana:
+  #   image: '{{ docker_registry_url }}/grafana:8.3.2'
+  #   ports:
+  #     - 3000:3000
+  #   volumes:
+  #     - /data/grafana-provisioning:/etc/grafana/provisioning/datasources
+  #     - /data/grafana:/var/lib/grafana
+  #   networks:
+  #     - skynet
+  #   restart: unless-stopped
+  #   user: root
+  #   deploy:
+  #     labels:
+  #       - traefik.enable=true
+  #       - traefik.docker.network=skynet
+  #       # traefik-http set up only to use the middleware to redirect to https
+  #       - traefik.http.routers.grafana-public-http.rule=Host(`mon.local`)
+  #       - traefik.http.routers.grafana-public-http.entrypoints=http
+  #       - traefik.http.routers.grafana-public-http.middlewares=https-redirect
+  #       # traefik-https the actual router using HTTPS
+  #       - traefik.http.routers.grafana-public-https.rule=Host(`mon.local`)
+  #       - traefik.http.routers.grafana-public-https.entrypoints=https
+  #       - traefik.http.routers.grafana-public-https.tls=true
+  #       # Define the port inside of the Docker service to use
+  #       - traefik.http.services.grafana-public.loadbalancer.server.port=80
 
 
 networks:
