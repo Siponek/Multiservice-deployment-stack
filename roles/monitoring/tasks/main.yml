@@ -6,7 +6,7 @@
     owner: root
     group: root
     mode: "0755"
-  when: inventory_hostname == groups['swarm_managers'][0]
+  when: inventory_hostname == groups['nfs_servers'][0]
 
 - name: Copy fluent-bit.conf to /data/fluent-bit
   ansible.builtin.copy:
@@ -15,7 +15,7 @@
     owner: root
     group: root
     mode: "0777"
-  when: inventory_hostname == groups['swarm_managers'][0]
+  when: inventory_hostname == groups['nfs_servers'][0]
 
 - name: Create /data/prometheus
   ansible.builtin.file:
@@ -24,7 +24,7 @@
     owner: root
     group: root
     mode: "0755"
-  when: inventory_hostname == groups['swarm_managers'][0]
+  when: inventory_hostname == groups['nfs_servers'][0]
 
 - name: Create /data/loki
   ansible.builtin.file:
@@ -33,7 +33,7 @@
     owner: root
     group: root
     mode: "0755"
-  when: inventory_hostname == groups['swarm_managers'][0]
+  when: inventory_hostname == groups['nfs_servers'][0]
 
 - name: Create /data/grafana
   ansible.builtin.file:
@@ -42,7 +42,7 @@
     owner: root
     group: root
     mode: "0755"
-  when: inventory_hostname == groups['swarm_managers'][0]
+  when: inventory_hostname == groups['nfs_servers'][0]
 
 - name: Create /data/grafana-provisioning
   ansible.builtin.file:
@@ -51,4 +51,4 @@
     owner: root
     group: root
     mode: "0755"
-  when: inventory_hostname == groups['swarm_managers'][0]
+  when: inventory_hostname == groups['nfs_servers'][0]
