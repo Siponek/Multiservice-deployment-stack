@@ -185,6 +185,7 @@ services:
       placement:
         constraints:
           - node.role == manager
+    user: root
 
   loki:
     image: '{{ docker_registry_url }}/loki:2.7.1'
