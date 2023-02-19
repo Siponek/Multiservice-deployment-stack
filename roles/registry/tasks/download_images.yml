@@ -60,6 +60,6 @@
 - name: Get grafana image
   community.docker.docker_image:
     name: grafana/grafana:9.3.1
-    repository: "{{ docker_registry_url }}/grafana:8.3.2"
+    repository: "{{ docker_registry_url }}/grafana:9.3.1"
     source: pull
     push: true
