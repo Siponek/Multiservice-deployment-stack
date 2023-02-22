@@ -27,7 +27,9 @@
     dest: /etc/docker/daemon.json
     content: |
       {
-        "insecure-registries": ["{{ docker_registry_url }}"]
+        "insecure-registries": ["{{ docker_registry_url }}"],
+        "metrics-addr" : "0.0.0.0:9323",
+        "experimental" : true
       }
     force: true
     owner: root
