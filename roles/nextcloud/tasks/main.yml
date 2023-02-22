@@ -1,28 +1,8 @@
 ---
-- name: Pull nextcloud image
-  community.docker.docker_image:
-    name: "nextcloud:23.0-apache"
-    repository: "{{ docker_registry_url }}/nextcloud:23.0-apache"
-    source: pull
-  when: inventory_hostname == groups['swarm_managers'][0]
-
-- name: Wait for nextcloud image
-  community.docker.docker_image_info:
-    name: "{{ docker_registry_url }}/nextcloud:23.0-apache"
-  register: nextcloud_image
-  until: nextcloud_image.images | length > 0
-  retries: 10
-  delay: 5
-  when: inventory_hostname == groups['swarm_managers'][0]
-
-- name: Push nextcloud to registry
-  community.docker.docker_image:
-    name: "{{ docker_registry_url }}/nextcloud:23.0-apache"
-    repository: "{{ docker_registry_url }}/nextcloud:23.0-apache"
-    source: pull
-    push: true
-    debug: true
-  when: inventory_hostname == groups['swarm_managers'][0]
+- name: Install jq
+  ansible.builtin.package:
+    name: jq
+    state: present
 
 - name: Create /data/nextcloud
   ansible.builtin.file:
@@ -33,74 +13,29 @@
     mode: 0755
   when: inventory_hostname == groups['swarm_managers'][0]
 
+- name: Create /data/nextcloud/html
+  ansible.builtin.file:
+    path: "{{ nextcloud_data_dir }}/html"
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: 0755
+  when: inventory_hostname == groups['swarm_managers'][0]
+
 - name: Place autoconfig.php inside the /data/nextcloud directory
   ansible.builtin.template:
     src: autoconfig.php.j2
-    dest: /data/nextcloud/autoconfig.php
+    dest: /data/nextcloud/html/autoconfig.php
     owner: www-data
     group: www-data
-    mode: 0664
+    mode: 0774
   when: inventory_hostname == groups['swarm_managers'][0]
 
-- name: Start nextcloud
-  community.docker.docker_swarm_service:
-    name: "nextcloud"
-    image: "{{ docker_registry_url }}/nextcloud:23.0-apache"
-    mounts:
-      - source: "{{ nextcloud_data_dir }}"
-        target: "/var/www/html"
-    publish:
-      - mode: host
-        published_port: 80
-        target_port: 80
-    networks:
-      - host
-    env:
-      POSTGRES_DB: "nextcloud"
-      POSTGRES_USER: "{{ nextcloud_username }}"
-      POSTGRES_PASSWORD: "{{ nextcloud_password }}"
-      POSTGRES_HOST: "{{ postgres_host }}"
-      NEXTCLOUD_ADMIN_USER: "{{ nextcloud_username }}"
-      NEXTCLOUD_ADMIN_PASSWORD: "{{ nextcloud_password }}"
-      NEXTCLOUD_TRUSTED_DOMAINS: "192.168.50.10 192.168.50.20"
-    replicas: 2
-    restart_config:
-      condition: any
+- name: Place scripts/nextcloud-integrator.sh inside the /data/nextcloud directory
+  ansible.builtin.copy:
+    src: ../scripts/nextcloud-integrator.sh
+    dest: /data/nextcloud/nextcloud-integrator.sh
+    owner: www-data
+    group: www-data
+    mode: 0777
   when: inventory_hostname == groups['swarm_managers'][0]
-
-- name: Wait for nextcloud to start
-  ansible.builtin.wait_for:
-    port: "80"
-    timeout: 300
-
-# - name: Wait for nextcloud initialization
-#   community.docker.docker_container_exec:
-#     container: "{% for specific in result.containers if specific.Command=='/entrypoint.sh apache2-foreground' %}{{ specific.Names[0][1:] }}{% endfor %}"
-#     command: php occ status --output json_pretty
-#   register: nextcloud
-#   until: nextcloud.containers[0].State.Status == 'installed'
-#   retries: 10
-#   delay: 5
-#   when: inventory_hostname == groups['swarm_managers'][0]
-
-- name: Get info on docker host
-  community.docker.docker_host_info:
-    containers: true
-  register: result
-
-- name: Set nextcloud container name
-  ansible.builtin.set_fact:
-    nc_container_name: "{% for specific in result.containers if 'nextcloud' in specific.Names[0] %}{{ specific.Names[0][1:] }}{% endfor %}"
-
-- name: Set keycloak container name
-  ansible.builtin.set_fact:
-    kc_container_name: "{% for specific in result.containers if 'keycloak' in specific.Names[0] %}{{ specific.Names[0][1:] }}{% endfor %}"
-
-- name: Launch script on keycloak machine
-  ansible.builtin.script: ./sus.sh
-  environment:
-    NC_CONTAINER_NAME: "{{ nc_container_name }}"
-    KC_CONTAINER_NAME: "{{ kc_container_name }}"
-    KEYCLOAK_USERNAME: "{{ keycloak_username }}"
-    KEYCLOAK_PASSWORD: "{{ keycloak_password }}"
-  when: kc_container_name != ''

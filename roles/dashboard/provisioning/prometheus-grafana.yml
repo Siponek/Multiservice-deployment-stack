@@ -1,0 +1,13 @@
+apiVersion: 1
+
+datasources:
+- name: Prometheus
+  type: prometheus
+  access: proxy
+  url: http://prometheus:9090
+  jsonData:
+    timeInterval: "5s"
+    timeRange: "5m"
+    httpMethod: "GET"
+    httpHeaderName1: "Authorization"
+    httpHeaderValue1: "Bearer prometheus-bearer-token"

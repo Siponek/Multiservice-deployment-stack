@@ -1,0 +1,34 @@
+---
+- name: Install jq
+  ansible.builtin.package:
+    name: jq
+    state: present
+
+- name: Copy template
+  ansible.builtin.template:
+    src: templates/docker-compose.yml
+    dest: /data/docker-compose.yml
+    owner: root
+    group: root
+    mode: 0644
+  when: inventory_hostname == groups['swarm_managers'][0]
+
+- name: Install jsondiff
+  ansible.builtin.pip:
+    name: jsondiff
+    state: present
+  when: inventory_hostname == groups['swarm_managers'][0]
+
+- name: Create docker network
+  community.docker.docker_network:
+    name: skynet
+    driver: overlay
+  when: inventory_hostname == groups['swarm_managers'][0]
+
+- name: Deploy stack from a compose file
+  community.docker.docker_stack:
+    state: present
+    name: vcc
+    compose:
+      - /data/docker-compose.yml
+  when: inventory_hostname == groups['swarm_managers'][0]

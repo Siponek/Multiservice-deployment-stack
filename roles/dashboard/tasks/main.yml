@@ -1,1 +1,34 @@
 ---
+- block:
+  - name: Create /data/grafana
+    ansible.builtin.file:
+      path: "/data/grafana"
+      state: directory
+      owner: root
+      group: root
+      mode: "0755"
+  
+  - name: Create /data/grafana-provisioning
+    ansible.builtin.file:
+      path: "/data/grafana-provisioning"
+      state: directory
+      owner: root
+      group: root
+      mode: "0755"
+  
+  - name: Copy loki.yml to /data/grafana-provisioning
+    ansible.builtin.copy:
+      src: ../provisioning/loki-grafana.yml
+      dest: /data/grafana-provisioning/loki.yml
+      owner: root
+      group: root
+      mode: "0775"
+  
+  - name: Copy prometheus.yml to /data/grafana-provisioning
+    ansible.builtin.copy:
+      src: ../provisioning/prometheus-grafana.yml
+      dest: /data/grafana-provisioning/prometheus.yml
+      owner: root
+      group: root
+      mode: "0775"
+  when: inventory_hostname == groups['nfs_servers'][0]

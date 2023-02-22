@@ -4,9 +4,10 @@ $AUTOCONFIG = array(
   "dbname"        => "nextcloud",
   "dbuser"        => "{{ nextcloud_username }}",
   "dbpass"        => "{{ nextcloud_password }}",
-  "dbhost"        => "localhost",//"{{ postgres_host }}",
+  "dbhost"        => "postgres",
   "dbport"        => "{{ postgres_port }}",
   "dbtableprefix" => "oc_",
   "adminlogin"    => "{{ nextcloud_username }}",
   "adminpass"     => "{{ nextcloud_password }}",
+  
 );

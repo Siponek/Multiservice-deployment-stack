@@ -1,29 +1,4 @@
 ---
-- name: Pull Keycloak image
-  community.docker.docker_image:
-    name: quay.io/keycloak/keycloak:20.0.1
-    repository: "{{ docker_registry_url }}/keycloak:20.0.1"
-    source: pull
-  when: inventory_hostname == groups['swarm_managers'][0]
-
-- name: Wait for keycloak image
-  community.docker.docker_image_info:
-    name: "{{ docker_registry_url }}/keycloak:20.0.1"
-  register: keycloak_image
-  until: keycloak_image.images | length > 0
-  retries: 10
-  delay: 5
-  when: inventory_hostname == groups['swarm_managers'][0]
-
-- name: Push keycloak to registry
-  community.docker.docker_image:
-    name: "{{ docker_registry_url }}/keycloak:20.0.1"
-    repository: "{{ docker_registry_url }}/keycloak:20.0.1"
-    source: pull
-    push: true
-    debug: true
-  when: inventory_hostname == groups['swarm_managers'][0]
-
 - name: Create /data/keycloak
   ansible.builtin.file:
     path: "{{ keycloak_data_dir }}"
@@ -40,32 +15,4 @@
     owner: root
     group: root
     mode: 0644
-  when: inventory_hostname == groups['swarm_managers'][0]
-
-- name: Start Keycloak
-  community.docker.docker_swarm_service:
-    name: "keycloak"
-    image: "{{ docker_registry_url }}/keycloak:20.0.1"
-    mounts:
-      - source: /data/keycloak/realm-export.json
-        target: /opt/keycloak/data/import/main-realm.json
-        readonly: true
-    publish:
-      - mode: host
-        published_port: 8080
-        target_port: 8443
-    networks:
-      - name:
-          host
-    restart_config:
-      condition: on-failure
-    env:
-      KC_CONTAINER_NAME: "keycloak"
-      KEYCLOAK_ADMIN: "{{ keycloak_username }}"
-      KEYCLOAK_ADMIN_PASSWORD: "{{ keycloak_password }}"
-      KC_DB_URL: "jdbc:postgresql://{{ ansible_host }}:5432/keycloak"
-      KC_DB_USERNAME: "{{ keycloak_username }}"
-      KC_DB_PASSWORD: "{{ keycloak_password }}"
-      KC_DB: "postgres"
-    args: "start-dev --import-realm"
   when: inventory_hostname == groups['swarm_managers'][0]
