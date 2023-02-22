@@ -1,38 +1,39 @@
 ---
-- block:
-  - name: Create /data/grafana/provisioning/dashboards
-    ansible.builtin.file:
-      path: "/data/grafana/provisioning/dashboards"
-      state: directory
-      owner: root
-      group: root
-      mode: "0755"
-  - name: Create /data/grafana/provisioning/datasources
-    ansible.builtin.file:
-      path: "/data/grafana/provisioning/datasources"
-      state: directory
-      owner: root
-      group: root
-      mode: "0755"
-  
-  # Copy datasources
-  - name: Copy loki.yml to /data/grafana/provisioning/datasources
-    ansible.builtin.copy:
-      src: ../provisioning/loki-grafana.yml
-      dest: /data/grafana/provisioning/datasources/loki.yml
-      owner: root
-      group: root
-      mode: "0775"
-  - name: Copy prometheus.yml to /data/grafana/provisioning/datasources
-    ansible.builtin.copy:
-      src: ../provisioning/prometheus-grafana.yml
-      dest: /data/grafana/provisioning/datasources/prometheus.yml
-      owner: root
-      group: root
-      mode: "0775"
-
-  # Copy dashboards
-  - name: Print TODO
-    ansible.builtin.debug:
-      msg: "TODO: Copy dashboards to /data/grafana/provisioning/dashboards"
+- name: Provisioning Grafana
   when: inventory_hostname == groups['nfs_servers'][0]
+  block:
+    - name: Create /data/grafana/provisioning/dashboards
+      ansible.builtin.file:
+        path: "/data/grafana/provisioning/dashboards"
+        state: directory
+        owner: root
+        group: root
+        mode: "0755"
+    - name: Create /data/grafana/provisioning/datasources
+      ansible.builtin.file:
+        path: "/data/grafana/provisioning/datasources"
+        state: directory
+        owner: root
+        group: root
+        mode: "0755"
+
+    # Copy datasources
+    - name: Copy loki.yml to /data/grafana/provisioning/datasources
+      ansible.builtin.copy:
+        src: ../provisioning/loki-grafana.yml
+        dest: /data/grafana/provisioning/datasources/loki.yml
+        owner: root
+        group: root
+        mode: "0775"
+    - name: Copy prometheus.yml to /data/grafana/provisioning/datasources
+      ansible.builtin.copy:
+        src: ../provisioning/prometheus-grafana.yml
+        dest: /data/grafana/provisioning/datasources/prometheus.yml
+        owner: root
+        group: root
+        mode: "0775"
+
+    # Copy dashboards
+    - name: Print TODO
+      ansible.builtin.debug:
+        msg: "TODO: Copy dashboards to /data/grafana/provisioning/dashboards"
