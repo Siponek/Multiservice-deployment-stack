@@ -20,24 +20,17 @@
 - name: Prometheus
   when: inventory_hostname == groups['nfs_servers'][0]
   block:
-    - name: Create /data/prometheus
+    - name: Create /data/prometheus/config
       ansible.builtin.file:
-        path: "/data/prometheus"
+        path: "/data/prometheus/config"
         state: directory
         owner: root
         group: root
         mode: "0755"
-    - name: Create prometheus-data folder
-      ansible.builtin.file:
-        path: "/data/prometheus-data"
-        state: directory
-        owner: root
-        group: root
-        mode: "0755"
-    - name: Copy prometheus.yml to /data/prometheus
+    - name: Copy prometheus-conf.yml to /data/prometheus/config
       ansible.builtin.copy:
-        src: ../conf/prometheus-conf.yml
-        dest: /data/prometheus/prometheus.yml
+        src: ../conf/prometheus-config.yml
+        dest: /data/prometheus/config/prometheus-config.yml
         owner: root
         group: root
         mode: "0775"
@@ -54,8 +47,8 @@
         mode: "0755"
     - name: Copy loki config
       ansible.builtin.copy:
-        src: ../conf/loki-conf.yml
-        dest: /data/loki-conf.yaml
+        src: ../conf/loki-config.yml
+        dest: /data/loki-config.yaml
         owner: root
         group: root
         mode: "0775"
