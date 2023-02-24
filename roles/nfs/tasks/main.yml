@@ -3,7 +3,7 @@
   ansible.builtin.file:
     path: "{{ nfs_share_path }}"
     state: directory
-    mode: 0755
+    mode: "0755"
 
 - name: Install NFS server
   ansible.builtin.include_tasks: nfs-server.yml

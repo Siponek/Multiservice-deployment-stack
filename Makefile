@@ -27,7 +27,7 @@ run-ansible: ansible-prepare
 .PHONY: run-ansible
 run-ansible-lint: update-venv
 	. $(VENV_ACTIVATE_PATH) && ansible-lint \
-		--format rich \
+		--format full \
 		--profile production \
 		$(ANSIBLE_PLAYBOOK)
 

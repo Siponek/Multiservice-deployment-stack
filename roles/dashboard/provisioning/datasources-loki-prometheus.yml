@@ -11,3 +11,11 @@ datasources:
     httpMethod: "GET"
     httpHeaderName1: "Authorization"
     httpHeaderValue1: "Bearer prometheus-bearer-token"
+- name: Loki
+  type: loki
+  access: proxy
+  url: http://loki:3100
+  jsonData:
+    maxLines: 1000
+    timeField: time
+    version: 1

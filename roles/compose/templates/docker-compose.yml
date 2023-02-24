@@ -8,9 +8,11 @@ services:
       - '/data/postgres-init:/docker-entrypoint-initdb.d'
     networks:
       - skynet
-    restart: on-failure
     environment:
       POSTGRES_PASSWORD: '{{ postgres_password }}'
+    deploy:
+      restart_policy:
+        condition: on-failure
 
   keycloak:
     image: '{{ docker_registry_url }}/keycloak:20.0.1'
@@ -20,7 +22,6 @@ services:
       - '/data/keycloak/realm-export.json:/opt/keycloak/data/import/main-realm.json'
     networks:
       - skynet
-    restart: on-failure
     environment:
       KC_CONTAINER_NAME: 'keycloak'
       KEYCLOAK_ADMIN: '{{ keycloak_username }}'
@@ -168,17 +169,13 @@ services:
 
   prometheus:
     image: '{{ docker_registry_url }}/prometheus:v2.40.6'
-    ports:
-      - "9090:9090"
     volumes:
-      - /data/prometheus:/etc/prometheus
-      - /data/prometheus-data:/prometheus
+      - /data/prometheus:/prometheus
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - skynet
-    restart: unless-stopped
     command:
-      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--config.file=/prometheus/config/prometheus-config.yml"
     deploy:
       mode: replicated
       replicas: 1
@@ -189,12 +186,18 @@ services:
 
   loki:
     image: '{{ docker_registry_url }}/loki:2.7.1'
+    hostname: loki
     ports:
       - 3100:3100
     volumes:
       - /data/loki:/data
+      - /data/loki-config.yaml:/mnt/config/loki-config.yaml
+      - /data/loki:/etc/loki
+    command:
+      - "-config.file=/mnt/config/loki-config.yaml"
     networks:
       - skynet
+    user: root
 
   grafana:
     image: '{{ docker_registry_url }}/grafana:9.3.1'
@@ -204,7 +207,6 @@ services:
       - /data/grafana:/var/lib/grafana
     networks:
       - skynet
-    restart: unless-stopped
     user: root
     deploy:
       labels:
