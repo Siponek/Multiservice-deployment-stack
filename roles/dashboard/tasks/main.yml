@@ -18,17 +18,10 @@
         mode: "0755"
 
     # Copy datasources
-    - name: Copy loki.yml to /data/grafana/provisioning/datasources
+    - name: Copy datasources-loki-prometheus.yml to /data/grafana/provisioning/datasources
       ansible.builtin.copy:
-        src: ../provisioning/loki-grafana.yml
-        dest: /data/grafana/provisioning/datasources/loki.yml
-        owner: root
-        group: root
-        mode: "0775"
-    - name: Copy prometheus.yml to /data/grafana/provisioning/datasources
-      ansible.builtin.copy:
-        src: ../provisioning/prometheus-grafana.yml
-        dest: /data/grafana/provisioning/datasources/prometheus.yml
+        src: ../provisioning/datasources-loki-prometheus.yml
+        dest: /data/grafana/provisioning/datasources/datasources-loki-prometheus.yml
         owner: root
         group: root
         mode: "0775"

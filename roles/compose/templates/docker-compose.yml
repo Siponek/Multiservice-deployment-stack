@@ -8,9 +8,11 @@ services:
       - '/data/postgres-init:/docker-entrypoint-initdb.d'
     networks:
       - skynet
-    restart: on-failure
     environment:
       POSTGRES_PASSWORD: '{{ postgres_password }}'
+    deploy:
+      restart_policy:
+        condition: on-failure
 
   keycloak:
     image: '{{ docker_registry_url }}/keycloak:20.0.1'
@@ -20,7 +22,6 @@ services:
       - '/data/keycloak/realm-export.json:/opt/keycloak/data/import/main-realm.json'
     networks:
       - skynet
-    restart: on-failure
     environment:
       KC_CONTAINER_NAME: 'keycloak'
       KEYCLOAK_ADMIN: '{{ keycloak_username }}'
@@ -160,7 +161,6 @@ services:
     image: '{{ docker_registry_url }}/fluent-bit:2.0.6'
     networks:
       - skynet
-    restart: unless-stopped
     volumes:
       - /data/fluent-bit/fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf
       - /var/lib/docker/containers:/var/lib/docker/containers
@@ -174,7 +174,6 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - skynet
-    restart: unless-stopped
     command:
       - "--config.file=/prometheus/config/prometheus-config.yml"
     deploy:
@@ -198,7 +197,6 @@ services:
       - "-config.file=/mnt/config/loki-config.yaml"
     networks:
       - skynet
-    restart: unless-stopped
     user: root
 
   grafana:
@@ -209,7 +207,6 @@ services:
       - /data/grafana:/var/lib/grafana
     networks:
       - skynet
-    restart: unless-stopped
     user: root
     deploy:
       labels:
