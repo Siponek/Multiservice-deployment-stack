@@ -9,10 +9,11 @@ services:
     networks:
       - skynet
     environment:
+      CONTAINER_NAME: 'postgres'
       POSTGRES_PASSWORD: '{{ postgres_password }}'
     deploy:
       restart_policy:
-        condition: on-failure
+        condition: any
 
   keycloak:
     image: '{{ docker_registry_url }}/keycloak:20.0.1'
@@ -23,6 +24,7 @@ services:
     networks:
       - skynet
     environment:
+      CONTAINER_NAME: 'keycloak'
       KC_CONTAINER_NAME: 'keycloak'
       KEYCLOAK_ADMIN: '{{ keycloak_username }}'
       KEYCLOAK_ADMIN_PASSWORD: '{{ keycloak_password }}'
@@ -66,6 +68,7 @@ services:
       - "auth.local:192.168.50.10"
       - "cloud.local:192.168.50.10"
     environment:
+      CONTAINER_NAME: 'nextcloud'
       POSTGRES_DB: 'nextcloud'
       POSTGRES_USER: '{{ nextcloud_username }}'
       POSTGRES_PASSWORD: '{{ nextcloud_password }}'
@@ -109,6 +112,8 @@ services:
       - /data/certs:/etc/ssl/traefik
       - /data/traefik:/etc/traefik/dynamic
       - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      CONTAINER_NAME: 'traefik'
     deploy:
       mode: replicated
       replicas: 1
@@ -201,6 +206,7 @@ services:
     volumes:
       - /data/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
       - /data/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
+      - /data/grafana/dashboard-config:/var/lib/grafana/dashboards
       - /data/grafana:/var/lib/grafana
     networks:
       - skynet
