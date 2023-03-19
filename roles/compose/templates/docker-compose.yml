@@ -206,7 +206,8 @@ services:
     volumes:
       - /data/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
       - /data/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
-      - /data/grafana/dashboard-config:/var/lib/grafana/dashboards
+      - /data/grafana/dashboardlayout:/var/lib/grafana/dashboards
+      - /data/grafana/provisioning/home.json:/usr/share/grafana/public/dashboards/home.json
       - /data/grafana:/var/lib/grafana
     networks:
       - skynet
