@@ -13,6 +13,5 @@
     - keycloak
     - nextcloud
     - monitoring
-    - logging
     - dashboard
     - compose
