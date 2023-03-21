@@ -14,8 +14,6 @@
     mode: "0644"
 
 # Launch setup tasks for registry
-# - setup_registry.yml for registry
-# - setup_registry_cache.yml for registry cache (not working)
 - name: Setup
   ansible.builtin.include_tasks: setup_registry.yml
 

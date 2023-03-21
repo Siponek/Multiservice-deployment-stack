@@ -16,6 +16,13 @@
         owner: root
         group: root
         mode: "0755"
+    - name: Create /data/grafana/dashboardlayout
+      ansible.builtin.file:
+        path: "/data/grafana/dashboardlayout"
+        state: directory
+        owner: root
+        group: root
+        mode: "0755"
 
     # Copy datasources
     - name: Copy datasources-loki-prometheus.yml to /data/grafana/provisioning/datasources
@@ -26,7 +33,28 @@
         group: root
         mode: "0775"
 
+    # Copy dashboard-config
+    - name: Copy dashboard-config to /data/grafana/dashboard-config
+      ansible.builtin.copy:
+        src: ../provisioning/dashboard-config.yml
+        dest: /data/grafana/provisioning/dashboards/dashboard-config.yml
+        owner: root
+        group: root
+        mode: "0775"
+
+    - name: Copy home.json to /usr/share/grafana/public/dashboards/home.json
+      ansible.builtin.copy:
+        src: ../provisioning/home.json
+        dest: /data/grafana/provisioning/home.json
+        owner: root
+        group: root
+        mode: "0775"
+
     # Copy dashboards
-    - name: Print TODO
-      ansible.builtin.debug:
-        msg: "TODO: Copy dashboards to /data/grafana/provisioning/dashboards"
+    - name: Copy dashboards to /data/grafana/provisioning/dashboards
+      ansible.builtin.copy:
+        src: ../provisioning/dashboardlayout
+        dest: /data/grafana/dashboardlayout
+        owner: root
+        group: root
+        mode: "0775"

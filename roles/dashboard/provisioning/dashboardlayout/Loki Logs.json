@@ -1,0 +1,86 @@
+{
+	"annotations": {
+		"list": [
+			{
+				"builtIn": 1,
+				"datasource": {
+					"type": "grafana",
+					"uid": "-- Grafana --"
+				},
+				"enable": true,
+				"hide": true,
+				"iconColor": "rgba(0, 211, 255, 1)",
+				"name": "Annotations & Alerts",
+				"target": {
+					"limit": 100,
+					"matchAny": false,
+					"tags": [],
+					"type": "dashboard"
+				},
+				"type": "dashboard"
+			}
+		]
+	},
+	"editable": false,
+	"fiscalYearStartMonth": 0,
+	"graphTooltip": 0,
+	"id": 2,
+	"links": [],
+	"liveNow": false,
+	"panels": [
+		{
+			"datasource": {
+				"type": "loki",
+				"uid": "P8E80F9AEF21F6940"
+			},
+			"gridPos": {
+				"h": 28,
+				"w": 24,
+				"x": 0,
+				"y": 0
+			},
+			"id": 1,
+			"options": {
+				"dedupStrategy": "none",
+				"enableLogDetails": true,
+				"prettifyLogMessage": false,
+				"showCommonLabels": false,
+				"showLabels": false,
+				"showTime": false,
+				"sortOrder": "Descending",
+				"wrapLogMessage": false
+			},
+			"targets": [
+				{
+					"datasource": {
+						"type": "loki",
+						"uid": "P8E80F9AEF21F6940"
+					},
+					"editorMode": "builder",
+					"expr": "{job=\"fluentbit\"}",
+					"key": "Q-bc119cbd-664f-42ea-a35c-a4c963561fa9-0",
+					"queryType": "range",
+					"refId": "A"
+				}
+			],
+			"title": "Loki Logs",
+			"type": "logs"
+		}
+	],
+	"schemaVersion": 37,
+	"style": "dark",
+	"tags": [],
+	"templating": {
+		"list": []
+	},
+	"time": {
+		"from": "now-5m",
+		"to": "now"
+	},
+	"timepicker": {},
+	"timezone": "",
+	"title": "Loki Logs",
+	"uid": "UwsFreaVz",
+	"version": 2,
+	"weekStart": ""
+}
