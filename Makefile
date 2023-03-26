@@ -10,6 +10,13 @@ VENV_ACTIVATE_PATH := $(VENV_PATH)/bin/activate
 #
 # Ansible
 #
+.PHONY: create_config
+create_config:
+	python3 -m venv $(VENV_PATH)
+	. $(VENV_ACTIVATE_PATH) && ansible-galaxy collection install -r requirements.yml
+	ansible-config init --disabled -t all > ansible.cfg
+
+
 .PHONY: ansible-prepare
 ansible-prepare: update-venv
 	. $(VENV_ACTIVATE_PATH) && ansible-galaxy collection install -r requirements.yml
@@ -23,6 +30,15 @@ run-ansible: ansible-prepare
 		--verbose \
 		$(ANSIBLE_ARGS) \
 		$(ANSIBLE_PLAYBOOK)
+
+.PHONY: fast
+fast:
+	. $(VENV_ACTIVATE_PATH) && ansible-playbook \
+		--inventory inventory.yml \
+		--ssh-common-args '-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no' \
+		$(ANSIBLE_ARGS) \
+		$(ANSIBLE_PLAYBOOK)
+
 
 .PHONY: run-ansible
 run-ansible-lint: update-venv

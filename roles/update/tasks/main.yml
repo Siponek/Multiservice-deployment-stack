@@ -1,6 +1,12 @@
 ---
+# - name: Updating and upgrading packages
+#   ansible.builtin.apt:
+#       upgrade: dist
+#       update_cache: true
 - name: Updating and upgrading packages
   ansible.builtin.apt:
-    update_cache: true
     upgrade: dist
-
+    force: true
+    update_cache: true
+    allow_unauthenticated: true
+    force_apt_get: true

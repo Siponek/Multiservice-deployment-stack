@@ -12,9 +12,13 @@
 - name: Init a new swarm with default parameters on node1
   community.docker.docker_swarm:
     state: present
-    advertise_addr: '{{ ansible_host }}'
+    advertise_addr: "{{ ansible_host }}"
   register: result
   when: inventory_hostname in groups['swarm_managers'][0]
+
+# - name: Print the gateway for each host when defined
+#   ansible.builtin.debug:
+#       msg: "These are the system hostvars {{ \n hostvars }}"
 
 - name: Get swarm facts from first manager node
   ansible.builtin.set_fact:
@@ -26,7 +30,7 @@
 - name: Join a swarm as a worker on groups 'nfs_clients'
   community.docker.docker_swarm:
     state: join
-    advertise_addr: '{{ ansible_host }}'
-    join_token: '{{ join_token_worker }}'
-    remote_addrs: '{{ swarm_remote_address }}'
+    advertise_addr: "{{ ansible_host }}"
+    join_token: "{{ join_token_worker }}"
+    remote_addrs: "{{ swarm_remote_address }}"
   when: inventory_hostname in groups['swarm_workers'] # allows more than one worker to join the swarm 🥳
