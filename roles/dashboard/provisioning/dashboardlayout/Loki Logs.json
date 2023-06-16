@@ -29,6 +29,7 @@
 	"liveNow": false,
 	"panels": [
 		{
+			"description": "This panel displays logs for the selected job.",
 			"datasource": {
 				"type": "loki",
 				"uid": "P8E80F9AEF21F6940"
@@ -43,12 +44,12 @@
 			"options": {
 				"dedupStrategy": "none",
 				"enableLogDetails": true,
-				"prettifyLogMessage": false,
-				"showCommonLabels": false,
-				"showLabels": false,
-				"showTime": false,
+				"prettifyLogMessage": true,
+				"showCommonLabels": true,
+				"showLabels": true,
+				"showTime": true,
 				"sortOrder": "Descending",
-				"wrapLogMessage": false
+				"wrapLogMessage": true
 			},
 			"targets": [
 				{
@@ -57,7 +58,7 @@
 						"uid": "P8E80F9AEF21F6940"
 					},
 					"editorMode": "builder",
-					"expr": "{job=\"fluentbit\"}",
+					"expr": "{job=\"$job\"}",
 					"key": "Q-bc119cbd-664f-42ea-a35c-a4c963561fa9-0",
 					"queryType": "range",
 					"refId": "A"
@@ -71,13 +72,50 @@
 	"style": "dark",
 	"tags": [],
 	"templating": {
-		"list": []
+		"list": [
+			{
+				"type": "query",
+				"label": "job",
+				"query": "label_values(job)",
+				"datasource": "loki",
+				"refresh": 2,
+				"sort": 1,
+				"hide": 0,
+				"name": "job",
+				"multi": false,
+				"includeAll": false
+			}
+		]
 	},
 	"time": {
 		"from": "now-5m",
 		"to": "now"
 	},
-	"timepicker": {},
+	"timepicker": {
+		"refresh_intervals": [
+			"5s",
+			"10s",
+			"30s",
+			"1m",
+			"5m",
+			"15m",
+			"30m",
+			"1h",
+			"2h",
+			"1d"
+		],
+		"time_options": [
+			"5m",
+			"15m",
+			"1h",
+			"6h",
+			"12h",
+			"24h",
+			"2d",
+			"7d",
+			"30d"
+		]
+	},
 	"timezone": "",
 	"title": "Loki Logs",
 	"uid": "UwsFreaVz",
